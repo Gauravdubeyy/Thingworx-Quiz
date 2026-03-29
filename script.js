@@ -749,21 +749,34 @@ function showLevelTransition(nextLevelIndex) {
   }
 
   isTransitioning = true;
-  quizState.currentLevelIndex = nextLevelIndex;
-  quizState.currentQuestionIndex = 0;
-  persistState();
 
-  refs.transitionTitle.textContent = `${toDisplayLevel(completedLevel.level)} Complete`;
-  refs.transitionText.textContent = `Starting ${toDisplayLevel(upcomingLevel.level)} level...`;
+  try {
+    quizState.currentLevelIndex = nextLevelIndex;
+    quizState.currentQuestionIndex = 0;
+    persistState();
 
-  showScreen("transition-screen");
+    refs.transitionTitle.textContent = `${toDisplayLevel(completedLevel.level)} Complete`;
+    refs.transitionText.textContent = `Starting ${toDisplayLevel(upcomingLevel.level)} level...`;
 
-  clearTimeout(transitionTimeoutId);
-  transitionTimeoutId = window.setTimeout(() => {
+    showScreen("transition-screen");
+
+    clearTimeout(transitionTimeoutId);
+    transitionTimeoutId = window.setTimeout(() => {
+      try {
+        showScreen("quiz-screen");
+        renderQuestion();
+      } catch (error) {
+        console.error("Transition render failed:", error);
+      } finally {
+        isTransitioning = false;
+        recoverNavigationState();
+      }
+    }, 1400);
+  } catch (error) {
+    console.error("Transition setup failed:", error);
     isTransitioning = false;
-    showScreen("quiz-screen");
-    renderQuestion();
-  }, 1400);
+    recoverNavigationState();
+  }
 }
 
 function renderQuestion() {
@@ -953,35 +966,45 @@ function handleAnswer(selectedIndex) {
   const isLastQuestionInLevel = questionIndex === levelObj.questions.length - 1;
   const isLastLevel = levelIndex === quizData.levels.length - 1;
 
-  if (isLastQuestionInLevel) {
-    isAutoAdvancing = true;
-  }
-
-  renderQuestion();
-  smoothScrollToExplanation();
-
   if (!isLastQuestionInLevel) {
     isAnswerCommitInProgress = false;
+    console.log("Moving to next question");
+    renderQuestion();
+    smoothScrollToExplanation();
+    recoverNavigationState();
     return;
   }
 
+  isAutoAdvancing = true;
+  console.log("Auto advancing started");
+  renderQuestion();
+  smoothScrollToExplanation();
+
   clearTimeout(autoAdvanceTimeoutId);
   autoAdvanceTimeoutId = window.setTimeout(() => {
-    isAnswerCommitInProgress = false;
-    isAutoAdvancing = false;
+    try {
+      console.log("Moving to next question");
 
-    if (levelIndex !== quizState.currentLevelIndex || questionIndex !== quizState.currentQuestionIndex) {
-      return;
+      if (levelIndex !== quizState.currentLevelIndex || questionIndex !== quizState.currentQuestionIndex) {
+        return;
+      }
+
+      if (isLastLevel) {
+        calculateScore();
+        persistState();
+        renderResult();
+        return;
+      }
+
+      showLevelTransition(levelIndex + 1);
+    } catch (error) {
+      console.error("Auto-advance failed:", error);
+    } finally {
+      isAnswerCommitInProgress = false;
+      isAutoAdvancing = false;
+      recoverNavigationState();
+      console.log("Auto advancing ended");
     }
-
-    if (isLastLevel) {
-      calculateScore();
-      persistState();
-      renderResult();
-      return;
-    }
-
-    showLevelTransition(levelIndex + 1);
   }, 1000);
 }
 
@@ -1231,6 +1254,24 @@ function setOptionInteractionLock(locked) {
   }
 
   refs.optionsContainer.style.pointerEvents = locked ? "none" : "auto";
+}
+
+function recoverNavigationState() {
+  if (!quizData || !isStateReady()) {
+    return;
+  }
+
+  if (!isTransitioning) {
+    setOptionInteractionLock(false);
+  }
+
+  const levelObj = getCurrentLevel();
+  if (!levelObj || !Array.isArray(levelObj.questions)) {
+    return;
+  }
+
+  const selectedIndex = quizState.answers?.[quizState.currentLevelIndex]?.[quizState.currentQuestionIndex] ?? null;
+  updateNavigation(selectedIndex, levelObj.questions.length);
 }
 
 function scrollToTopSmooth() {
