@@ -1,0 +1,473 @@
+{
+  "app": "thingworx-quiz",
+  "version": "services-sql-1.1",
+  "title": "ThingWorx Services & SQL MCQ Quiz – Code Focus",
+  "description": "30 MCQs on ThingWorx services, SQL, built-in code snippets, and CRUD. 20 basic, 5 intermediate, 5 advanced; at least 20 are code-based.",
+  "levels": [
+    {
+      "level": "basic",
+      "questions": [
+        {
+          "id": "svcsql2-basic-1",
+          "category": "js-service",
+          "question": "In a ThingWorx JavaScript service, what does this line do?",
+          "options": [
+            "Reads the Temperature property from an unrelated Thing",
+            "Reads the Temperature property from the current Thing where the service is defined",
+            "Declares a new local variable named me",
+            "Invokes a remote service on another server"
+          ],
+          "answerIndex": 1,
+          "answerText": "Reads the Temperature property from the current Thing where the service is defined",
+          "explanation": "Inside a ThingWorx JavaScript service, 'me' refers to the current Thing/Template/Shape, so 'me.Temperature' reads its Temperature property.",
+          "codeSnippet": "// JavaScript service code\nvar temp = me.Temperature;"
+        },
+        {
+          "id": "svcsql2-basic-2",
+          "category": "js-service",
+          "question": "Given the following service, what is the new value of Counter after one execution when it initially equals 10?",
+          "options": [
+            "Counter stays at 10",
+            "Counter becomes 11",
+            "Counter becomes 20",
+            "Counter becomes 0"
+          ],
+          "answerIndex": 1,
+          "answerText": "Counter becomes 11",
+          "explanation": "The service increments the property by 1, so a starting value of 10 becomes 11.",
+          "codeSnippet": "// JavaScript service on a Thing\nme.Counter = me.Counter + 1;"
+        },
+        {
+          "id": "svcsql2-basic-3",
+          "category": "js-service",
+          "question": "This code uses a built-in Resource. What is created by the call to CreateInfoTableFromDataShape?",
+          "options": [
+            "A Mashup definition for a table widget",
+            "An empty INFOTABLE that follows the specified Data Shape",
+            "A new Data Table entity in Composer",
+            "A SQL table in the persistence provider"
+          ],
+          "answerIndex": 1,
+          "answerText": "An empty INFOTABLE that follows the specified Data Shape",
+          "explanation": "CreateInfoTableFromDataShape returns an INFOTABLE instance whose columns are defined by the given Data Shape.",
+          "codeSnippet": "var params = {\n  infoTableName: 'TempTable',\n  dataShapeName: 'MyDataShape'\n};\nvar table = Resources['InfoTableFunctions'].CreateInfoTableFromDataShape(params);"
+        },
+        {
+          "id": "svcsql2-basic-4",
+          "category": "js-service",
+          "question": "In this snippet, what does values.AddRow(...) do?",
+          "options": [
+            "Adds a new property to the Thing",
+            "Adds a new row to the INFOTABLE values using the provided field values",
+            "Deletes an existing Data Table row",
+            "Creates a new Mashup for the table"
+          ],
+          "answerIndex": 1,
+          "answerText": "Adds a new row to the INFOTABLE values using the provided field values",
+          "explanation": "AddRow inserts a new row into the INFOTABLE with the given field values matching the Data Shape's columns.",
+          "codeSnippet": "var values = Resources['InfoTableFunctions'].CreateInfoTableFromDataShape({\n  infoTableName: 'Row',\n  dataShapeName: 'AlarmShape'\n});\nvalues.AddRow({ id: 'ALM-1', severity: 'HIGH' });"
+        },
+        {
+          "id": "svcsql2-basic-5",
+          "category": "data-table",
+          "question": "What does the following line do when executed in a service?",
+          "options": [
+            "Queries all rows in the Data Table",
+            "Deletes one row from the Data Table using its primary key",
+            "Deletes every row in the Data Table",
+            "Creates a new Data Table entity named MyTable"
+          ],
+          "answerIndex": 1,
+          "answerText": "Deletes one row from the Data Table using its primary key",
+          "explanation": "DeleteDataTableEntry removes a single entry whose key matches the keyvalue parameter.",
+          "codeSnippet": "Things['MyTable'].DeleteDataTableEntry({ keyvalue: 'ROW-001' });"
+        },
+        {
+          "id": "svcsql2-basic-6",
+          "category": "data-table",
+          "question": "Which CRUD operation is being performed in this snippet?",
+          "options": [
+            "Create",
+            "Read",
+            "Update",
+            "Delete"
+          ],
+          "answerIndex": 0,
+          "answerText": "Create",
+          "explanation": "AddDataTableEntry inserts a new row (create operation) into the Data Table.",
+          "codeSnippet": "var values = Resources['InfoTableFunctions'].CreateInfoTableFromDataShape({\n  infoTableName: 'Row',\n  dataShapeName: 'DS_MyTable'\n});\nvalues.AddRow({ id: 'ROW-100', status: 'NEW' });\nThings['MyTable'].AddDataTableEntry({ values: values });"
+        },
+        {
+          "id": "svcsql2-basic-7",
+          "category": "sql",
+          "question": "In a Database Thing service of type SQL Query, which placeholder correctly references an input parameter named deviceId?",
+          "options": [
+            "${deviceId}",
+            "[[deviceId]]",
+            "::deviceId::",
+            "{{deviceId}}"
+          ],
+          "answerIndex": 1,
+          "answerText": "[[deviceId]]",
+          "explanation": "Database Thing SQL services use the [[name]] syntax to reference input parameters inside the SQL text.",
+          "codeSnippet": "SELECT * FROM readings WHERE device_id = [[deviceId]];"
+        },
+        {
+          "id": "svcsql2-basic-8",
+          "category": "sql",
+          "question": "Given this SQL Query service on a Database Thing, what will it return?",
+          "options": [
+            "A BOOLEAN indicating success only",
+            "An INFOTABLE containing all columns and rows from the 'sensors' table",
+            "The number of affected rows",
+            "No result because SQL Query does not return data"
+          ],
+          "answerIndex": 1,
+          "answerText": "An INFOTABLE containing all columns and rows from the 'sensors' table",
+          "explanation": "SQL Query services return rows as an INFOTABLE when executing SELECT statements.",
+          "codeSnippet": "// SQL Query body\nSELECT * FROM sensors;"
+        },
+        {
+          "id": "svcsql2-basic-9",
+          "category": "js-snippet",
+          "question": "This snippet comes from a built-in Try/Catch code template. What does the catch block achieve?",
+          "options": [
+            "It retries the service automatically",
+            "It logs the error and rethrows it so the caller can handle the failure",
+            "It silently ignores the error",
+            "It converts the error to a Data Table row"
+          ],
+          "answerIndex": 1,
+          "answerText": "It logs the error and rethrows it so the caller can handle the failure",
+          "explanation": "The typical ThingWorx snippet logs the error with logger.error and then throws it again to signal failure to callers.",
+          "codeSnippet": "try {\n  // service logic here\n} catch (err) {\n  logger.error('Service failed: ' + err.message);\n  throw err;\n}"
+        },
+        {
+          "id": "svcsql2-basic-10",
+          "category": "js-snippet",
+          "question": "What will be logged by the following code when value is 5?",
+          "options": [
+            "The logger prints nothing",
+            "The logger prints 'Value is: 5' at INFO level",
+            "The logger prints 'Value is: 5' at ERROR level",
+            "The logger throws an exception because value is not a string"
+          ],
+          "answerIndex": 1,
+          "answerText": "The logger prints 'Value is: 5' at INFO level",
+          "explanation": "logger.info writes a message with INFO severity; JavaScript concatenation converts 5 to a string.",
+          "codeSnippet": "var value = 5;\nlogger.info('Value is: ' + value);"
+        },
+        {
+          "id": "svcsql2-basic-11",
+          "category": "data-table",
+          "question": "This code calls QueryDataTableEntries without a filter. What is the result?",
+          "options": [
+            "A single row is returned",
+            "All rows in the Data Table are returned as an INFOTABLE",
+            "No rows are returned",
+            "Only rows with status = 'OK' are returned"
+          ],
+          "answerIndex": 1,
+          "answerText": "All rows in the Data Table are returned as an INFOTABLE",
+          "explanation": "Calling QueryDataTableEntries with an empty query object returns all entries.",
+          "codeSnippet": "var result = Things['MyTable'].QueryDataTableEntries({ query: { filters: {} } });"
+        },
+        {
+          "id": "svcsql2-basic-12",
+          "category": "js-service",
+          "question": "What does this service return?",
+          "options": [
+            "A STRING with the greeting only",
+            "An INFOTABLE with a single column and row",
+            "A NUMBER containing the length of the name",
+            "A Data Table entity"
+          ],
+          "answerIndex": 0,
+          "answerText": "A STRING with the greeting only",
+          "explanation": "The service concatenates 'Hello ' with the input name and returns that string.",
+          "codeSnippet": "// input: name (STRING)\nvar result = 'Hello ' + name;\nreturn result;"
+        },
+        {
+          "id": "svcsql2-basic-13",
+          "category": "sql",
+          "question": "In this SQL Command service, which operation is being performed?",
+          "options": [
+            "SELECT",
+            "INSERT",
+            "UPDATE",
+            "DELETE"
+          ],
+          "answerIndex": 2,
+          "answerText": "UPDATE",
+          "explanation": "The SQL statement uses UPDATE ... SET ... WHERE, which updates existing rows.",
+          "codeSnippet": "UPDATE devices\nSET last_seen = NOW()\nWHERE id = [[deviceId]];"
+        },
+        {
+          "id": "svcsql2-basic-14",
+          "category": "sql",
+          "question": "What is the purpose of the WHERE clause in this SQL snippet?",
+          "options": [
+            "It defines the table name",
+            "It restricts the update to rows whose id matches the input parameter",
+            "It sorts the rows by id",
+            "It creates a new index on id"
+          ],
+          "answerIndex": 1,
+          "answerText": "It restricts the update to rows whose id matches the input parameter",
+          "explanation": "The WHERE id = [[deviceId]] condition ensures only the targeted row is updated.",
+          "codeSnippet": "UPDATE devices SET enabled = 1 WHERE id = [[deviceId]];"
+        },
+        {
+          "id": "svcsql2-basic-15",
+          "category": "js-snippet",
+          "question": "What is the effect of the for loop in this code?",
+          "options": [
+            "It iterates over each row in the INFOTABLE named rows",
+            "It iterates over each property of the Thing",
+            "It iterates over each user in the system",
+            "It iterates over each Data Table entity"
+          ],
+          "answerIndex": 0,
+          "answerText": "It iterates over each row in the INFOTABLE named rows",
+          "explanation": "rows.getRowCount() returns the number of rows, and rows.rows[i] accesses each row.",
+          "codeSnippet": "for (var i = 0; i < rows.getRowCount(); i++) {\n  var row = rows.rows[i];\n  // process row\n}"
+        },
+        {
+          "id": "svcsql2-basic-16",
+          "category": "js-service",
+          "question": "Assuming 'alarms' is an INFOTABLE, what does alarms.toJSON() return?",
+          "options": [
+            "A STRING containing a JSON representation of the INFOTABLE",
+            "A Data Table entity",
+            "An XML document",
+            "A BOOLEAN indicating success"
+          ],
+          "answerIndex": 0,
+          "answerText": "A STRING containing a JSON representation of the INFOTABLE",
+          "explanation": "toJSON() serializes the INFOTABLE into a JSON string that can be logged or returned.",
+          "codeSnippet": "var json = alarms.toJSON();\nlogger.debug(json);"
+        },
+        {
+          "id": "svcsql2-basic-17",
+          "category": "js-snippet",
+          "question": "This snippet uses a built-in code snippet to create an INFOTABLE and add a single row. Which field value will appear in the first row's 'status' column?",
+          "options": [
+            "'PENDING'",
+            "'DONE'",
+            "'ERROR'",
+            "An empty string"
+          ],
+          "answerIndex": 1,
+          "answerText": "'DONE'",
+          "explanation": "The AddRow call sets status: 'DONE', so that is the value stored for that column.",
+          "codeSnippet": "var t = Resources['InfoTableFunctions'].CreateInfoTableFromDataShape({\n  infoTableName: 'StatusTable',\n  dataShapeName: 'DS_Status'\n});\nt.AddRow({ id: '1', status: 'DONE' });"
+        },
+        {
+          "id": "svcsql2-basic-18",
+          "category": "js-service",
+          "question": "What will this code return if rows is an INFOTABLE with three rows and the field 'value' equals 1, 2, and 3?",
+          "options": [
+            "0",
+            "3",
+            "6",
+            "The average, which is 2"
+          ],
+          "answerIndex": 2,
+          "answerText": "6",
+          "explanation": "The service sums 1 + 2 + 3 and returns 6.",
+          "codeSnippet": "var sum = 0;\nfor (var i = 0; i < rows.getRowCount(); i++) {\n  sum += rows.rows[i].value;\n}\nreturn sum;"
+        },
+        {
+          "id": "svcsql2-basic-19",
+          "category": "sql",
+          "question": "In this SQL snippet, what does ORDER BY timestamp DESC ensure?",
+          "options": [
+            "Rows are inserted in descending order",
+            "Rows are returned sorted by timestamp from newest to oldest",
+            "Rows are grouped by timestamp",
+            "Rows are deleted based on timestamp"
+          ],
+          "answerIndex": 1,
+          "answerText": "Rows are returned sorted by timestamp from newest to oldest",
+          "explanation": "ORDER BY timestamp DESC sorts the result set with the most recent timestamps first.",
+          "codeSnippet": "SELECT * FROM readings ORDER BY timestamp DESC;"
+        },
+        {
+          "id": "svcsql2-basic-20",
+          "category": "sql",
+          "question": "What does LIMIT 10 do in this SQL Query service?",
+          "options": [
+            "Limits execution time to 10 seconds",
+            "Returns only the first 10 rows of the result set",
+            "Creates 10 new rows",
+            "Deletes 10 rows from the table"
+          ],
+          "answerIndex": 1,
+          "answerText": "Returns only the first 10 rows of the result set",
+          "explanation": "LIMIT 10 restricts the number of returned rows to 10, which is common in report services.",
+          "codeSnippet": "SELECT * FROM alarms ORDER BY createdAt DESC LIMIT 10;"
+        }
+      ]
+    },
+    {
+      "level": "intermediate",
+      "questions": [
+        {
+          "id": "svcsql2-int-1",
+          "category": "data-table",
+          "question": "What does this upsert pattern do when executed?",
+          "options": [
+            "It always deletes the row first",
+            "It adds a new row if the key does not exist or updates the existing row if the key already exists",
+            "It only reads data from the Data Table",
+            "It purges all rows from the Data Table"
+          ],
+          "answerIndex": 1,
+          "answerText": "It adds a new row if the key does not exist or updates the existing row if the key already exists",
+          "explanation": "AddOrUpdateDataTableEntry implements an upsert operation: insert or update based on the primary key.",
+          "codeSnippet": "var values = Resources['InfoTableFunctions'].CreateInfoTableFromDataShape({\n  infoTableName: 'Row',\n  dataShapeName: 'DS_Config'\n});\nvalues.AddRow({ key: 'LINE-1', targetRate: 120 });\nThings['ConfigTable'].AddOrUpdateDataTableEntry({ values: values });"
+        },
+        {
+          "id": "svcsql2-int-2",
+          "category": "data-table",
+          "question": "Which rows does this QueryDataTableEntries call return?",
+          "options": [
+            "All rows regardless of status",
+            "Only rows where status equals 'ACTIVE'",
+            "Only rows where status does not equal 'ACTIVE'",
+            "Only rows where status is null"
+          ],
+          "answerIndex": 1,
+          "answerText": "Only rows where status equals 'ACTIVE'",
+          "explanation": "The EQ filter on fieldName 'status' with value 'ACTIVE' restricts the result to active rows.",
+          "codeSnippet": "var query = {\n  filters: {\n    type: 'EQ',\n    fieldName: 'status',\n    value: 'ACTIVE'\n  }\n};\nvar result = Things['OrdersTable'].QueryDataTableEntries({ query: query });"
+        },
+        {
+          "id": "svcsql2-int-3",
+          "category": "js-snippet",
+          "question": "What is the effect of this InfoTableFunctions.Query call?",
+          "options": [
+            "It deletes matching rows from the INFOTABLE",
+            "It filters the 'rows' INFOTABLE using the specified QUERY object and returns a new INFOTABLE",
+            "It writes rows into a Data Table",
+            "It converts the INFOTABLE to JSON"
+          ],
+          "answerIndex": 1,
+          "answerText": "It filters the 'rows' INFOTABLE using the specified QUERY object and returns a new INFOTABLE",
+          "explanation": "InfoTableFunctions.Query applies the QUERY structure to an in-memory INFOTABLE and returns only matching rows.",
+          "codeSnippet": "var q = {\n  filters: {\n    type: 'GT',\n    fieldName: 'value',\n    value: 50\n  }\n};\nvar filtered = Resources['InfoTableFunctions'].Query({\n  t: rows,\n  query: q\n});"
+        },
+        {
+          "id": "svcsql2-int-4",
+          "category": "sql",
+          "question": "Assuming a PostgreSQL database, what does this SQL Query service return?",
+          "options": [
+            "Only rows older than 1 day",
+            "Rows whose timestamp is within the last 1 day for the given device",
+            "All rows for all devices",
+            "An error because interval syntax is invalid"
+          ],
+          "answerIndex": 1,
+          "answerText": "Rows whose timestamp is within the last 1 day for the given device",
+          "explanation": "The WHERE clause filters by device_id and timestamp > NOW() - interval '1 day', giving the last 24 hours of history for that device.",
+          "codeSnippet": "SELECT *\nFROM readings\nWHERE device_id = [[deviceId]]\n  AND timestamp > NOW() - interval '1 day';"
+        },
+        {
+          "id": "svcsql2-int-5",
+          "category": "js-service",
+          "question": "What is a good reason to structure a service like this, with a separate helper that formats an INFOTABLE for a Mashup?",
+          "options": [
+            "It prevents the service from being called by other Things",
+            "It cleanly separates data retrieval from presentation formatting so different Mashups can reuse the same core data",
+            "It forces all calls to go through SQL",
+            "It disables caching"
+          ],
+          "answerIndex": 1,
+          "answerText": "It cleanly separates data retrieval from presentation formatting so different Mashups can reuse the same core data",
+          "explanation": "Splitting concerns between core data services and formatting helpers improves reuse and maintainability.",
+          "codeSnippet": "// Core data service\nvar raw = Things['OrdersTable'].QueryDataTableEntries({ query: query });\n// Formatting helper for UI\nvar formatted = me.FormatOrdersForMashup({ rows: raw });\nreturn formatted;"
+        }
+      ]
+    },
+    {
+      "level": "advanced",
+      "questions": [
+        {
+          "id": "svcsql2-adv-1",
+          "category": "debugger",
+          "question": "In ThingWorx 10.x, how can you pause execution inside a long JavaScript service to inspect local variables?",
+          "options": [
+            "Insert a 'throw new Error()' statement",
+            "Use the built-in JavaScript debugger and set a breakpoint on the desired line",
+            "Log variables with logger.debug instead of pausing",
+            "Enable SQL trace on the Database Thing"
+          ],
+          "answerIndex": 1,
+          "answerText": "Use the built-in JavaScript debugger and set a breakpoint on the desired line",
+          "explanation": "The new debugger lets you attach to a running service, set breakpoints, and inspect variables without changing code.",
+          "codeSnippet": "// In ThingWorx 10, open the Debugger view, select this service,\n// set a breakpoint on the next line, then invoke the service.\nvar temp = me.Temperature;"
+        },
+        {
+          "id": "svcsql2-adv-2",
+          "category": "script-services",
+          "question": "Which ScriptServices call can you use in a DevOps pipeline to validate that a JavaScript body is syntactically correct before deploying it?",
+          "options": [
+            "ScriptServices.CheckScriptWithLinesAndColumns",
+            "ScriptServices.ExecuteImmediate",
+            "ScriptServices.DeleteAllScripts",
+            "ScriptServices.ExportMashup"
+          ],
+          "answerIndex": 0,
+          "answerText": "ScriptServices.CheckScriptWithLinesAndColumns",
+          "explanation": "CheckScriptWithLinesAndColumns analyzes a script and returns syntax problems with precise locations, which is useful for automated validation.",
+          "codeSnippet": "var params = {\n  script: newScriptBody,\n  entityName: 'MyThing',\n  serviceName: 'MyService'\n};\nvar report = Resources['ScriptServices'].CheckScriptWithLinesAndColumns(params);"
+        },
+        {
+          "id": "svcsql2-adv-3",
+          "category": "audit-crud",
+          "question": "What is the purpose of this subscription code?",
+          "options": [
+            "To recalculate KPIs only",
+            "To audit property changes by writing before-and-after values into an Audit Data Table whenever a property changes",
+            "To delete audit entries automatically",
+            "To disable logging on the property"
+          ],
+          "answerIndex": 1,
+          "answerText": "To audit property changes by writing before-and-after values into an Audit Data Table whenever a property changes",
+          "explanation": "The subscription listens to DataChange events and records user, timestamps, and values into an Audit table.",
+          "codeSnippet": "// Subscription on DataChange event\nvar values = Resources['InfoTableFunctions'].CreateInfoTableFromDataShape({\n  infoTableName: 'AuditRow',\n  dataShapeName: 'DS_Audit'\n});\nvalues.AddRow({\n  thingName: me.name,\n  propertyName: eventData.propertyName,\n  oldValue: eventData.oldValue,\n  newValue: eventData.newValue,\n  userName: user,\n  changeTime: new Date()\n});\nThings['AuditTable'].AddDataTableEntry({ values: values });"
+        },
+        {
+          "id": "svcsql2-adv-4",
+          "category": "sql-join",
+          "question": "In this advanced SQL Query service, which best describes the result?",
+          "options": [
+            "A list of devices with no telemetry",
+            "A joined result of devices and their latest reading time for the specified tenant",
+            "Only telemetry rows without devices",
+            "A list of tenants without any devices"
+          ],
+          "answerIndex": 1,
+          "answerText": "A joined result of devices and their latest reading time for the specified tenant",
+          "explanation": "The query joins devices to readings and groups by device id to find the latest timestamp per device for that tenant.",
+          "codeSnippet": "SELECT d.id, d.name, MAX(r.timestamp) AS last_reading\nFROM devices d\nJOIN readings r ON r.device_id = d.id\nWHERE d.tenant_id = [[tenantId]]\nGROUP BY d.id, d.name;"
+        },
+        {
+          "id": "svcsql2-adv-5",
+          "category": "pattern",
+          "question": "Why is this pattern of having a small coordinator service that calls multiple helper services recommended in complex ThingWorx solutions?",
+          "options": [
+            "It reduces the number of Things in the model",
+            "It makes each helper service easier to test, reuse, and debug while keeping orchestration logic clear",
+            "It disables the debugger on helper services",
+            "It avoids the need for Data Tables entirely"
+          ],
+          "answerIndex": 1,
+          "answerText": "It makes each helper service easier to test, reuse, and debug while keeping orchestration logic clear",
+          "explanation": "Decomposing responsibilities into small services improves maintainability, testability, and separation of concerns.",
+          "codeSnippet": "// Coordinator service\nvar live = me.ReadLiveData({});\nvar enriched = me.EnrichWithConfig({ data: live });\nme.StoreToHistory({ rows: enriched });\nreturn enriched;"
+        }
+      ]
+    }
+  ]
+}

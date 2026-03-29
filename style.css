@@ -220,6 +220,48 @@ input[type="text"]:focus-visible {
   text-align: center;
 }
 
+.quiz-type-grid {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.quiz-type-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  text-align: left;
+  background: #f8fbff;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 120ms ease;
+}
+
+.quiz-type-card h3 {
+  margin: 0 0 8px;
+  font-size: 1rem;
+}
+
+.quiz-type-card p {
+  margin: 4px 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.quiz-type-card.selected {
+  border-color: rgba(13, 148, 136, 0.55);
+  box-shadow: 0 8px 16px rgba(13, 148, 136, 0.2);
+  background: #e8fffb;
+}
+
+.select-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
 .intro-stats {
   margin-top: 16px;
   display: grid;
@@ -347,6 +389,25 @@ input[type="text"]:focus-visible {
   min-width: 0;
 }
 
+.code-snippet {
+  margin-top: 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid #1f2937;
+  background: #0f172a;
+  color: #e5e7eb;
+  overflow-x: auto;
+}
+
+.code-snippet pre {
+  margin: 0;
+  padding: 12px;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 0.86rem;
+  line-height: 1.45;
+  white-space: pre;
+  min-width: max-content;
+}
+
 .question-head {
   display: flex;
   align-items: center;
@@ -422,6 +483,13 @@ input[type="text"]:focus-visible {
 .option-text {
   min-width: 0;
   overflow-wrap: anywhere;
+}
+
+.options-grid.code-mode .option-text {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 0.9rem;
 }
 
 .option-card.selected {
@@ -623,15 +691,18 @@ input[type="text"]:focus-visible {
   }
 
   .intro-stats,
-  .result-grid {
+  .result-grid,
+  .quiz-type-grid {
     grid-template-columns: 1fr;
   }
 
-  .nav-row {
+  .nav-row,
+  .select-actions {
     flex-direction: column;
   }
 
-  .nav-row .btn {
+  .nav-row .btn,
+  .select-actions .btn {
     width: 100%;
   }
 }
@@ -660,6 +731,10 @@ input[type="text"]:focus-visible {
   }
 
   .progress-label-row {
+    font-size: 0.8rem;
+  }
+
+  .code-snippet pre {
     font-size: 0.8rem;
   }
 }

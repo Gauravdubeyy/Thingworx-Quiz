@@ -31,7 +31,33 @@
           <input id="username-input" type="text" maxlength="40" placeholder="Your name" autocomplete="name" />
 
           <p id="start-error" class="error-text" role="alert"></p>
-          <button id="start-btn" class="btn btn-primary" type="button">Start Quiz</button>
+          <button id="start-btn" class="btn btn-primary" type="button">Continue</button>
+        </div>
+      </section>
+
+      <section id="quiz-select-screen" class="screen" aria-live="polite">
+        <div class="panel panel-narrow">
+          <h2>Select Quiz Type</h2>
+          <p>Choose one quiz set before starting.</p>
+
+          <div id="quiz-type-cards" class="quiz-type-grid">
+            <button class="quiz-type-card" type="button" data-quiz-type="core">
+              <h3>ThingWorx Core Quiz</h3>
+              <p>60 questions</p>
+              <p>Concept + Scenario</p>
+            </button>
+            <button class="quiz-type-card" type="button" data-quiz-type="services">
+              <h3>Services &amp; SQL Code Quiz</h3>
+              <p>30 questions</p>
+              <p>Code-based + scenario</p>
+            </button>
+          </div>
+
+          <p id="quiz-select-error" class="error-text" role="alert"></p>
+          <div class="select-actions">
+            <button id="quiz-select-back-btn" class="btn btn-secondary" type="button">Back</button>
+            <button id="quiz-select-start-btn" class="btn btn-primary" type="button" disabled>Start Selected Quiz</button>
+          </div>
         </div>
       </section>
 
@@ -107,6 +133,10 @@
             </div>
             <h3 id="question-text">Question text</h3>
           </article>
+
+          <section id="code-snippet-box" class="code-snippet hidden" aria-label="Code snippet">
+            <pre id="code-snippet-text"></pre>
+          </section>
 
           <div id="options-container" class="options-grid" role="group" aria-label="Answer options"></div>
 
