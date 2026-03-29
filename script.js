@@ -1129,3 +1129,370 @@ function moveBack() {
     renderQuestion();
   }
 }
+function showLevelTransition(nextLevelIndex) {
+  if (!quizData || hasFatalError || isTransitioning) {
+    return;
+  }
+
+  const expectedNext = quizState.currentLevelIndex + 1;
+  if (nextLevelIndex !== expectedNext || nextLevelIndex < 1 || nextLevelIndex >= quizData.levels.length) {
+    return;
+  }
+
+  const completedLevel = quizData.levels[nextLevelIndex - 1];
+  const upcomingLevel = quizData.levels[nextLevelIndex];
+
+  if (!completedLevel || !upcomingLevel) {
+    showFatalError("Level transition failed due to invalid level data.");
+    return;
+  }
+
+  isTransitioning = true;
+
+  try {
+    quizState.currentLevelIndex = nextLevelIndex;
+    quizState.currentQuestionIndex = 0;
+    persistState();
+
+    refs.transitionTitle.textContent = `${toDisplayLevel(completedLevel.level)} Complete`;
+    refs.transitionText.textContent = `Starting ${toDisplayLevel(upcomingLevel.level)} level...`;
+
+    showScreen("transition-screen");
+
+    clearTimeout(transitionTimeoutId);
+    transitionTimeoutId = window.setTimeout(() => {
+      try {
+        showScreen("quiz-screen");
+        renderQuestion();
+      } catch (error) {
+        console.error("Transition render failed:", error);
+      } finally {
+        isTransitioning = false;
+        recoverNavigationState();
+      }
+    }, 1400);
+  } catch (error) {
+    console.error("Transition setup failed:", error);
+    isTransitioning = false;
+    recoverNavigationState();
+  }
+}
+
+function scheduleOptionalAutoAdvance(levelIndex, questionIndex, isLastLevel) {
+  if (!AUTO_ADVANCE_ENABLED) {
+    return;
+  }
+
+  debugLog("Auto advancing started");
+  cancelAutoAdvance();
+
+  autoAdvanceTimeoutId = window.setTimeout(() => {
+    try {
+      debugLog("Moving to next question");
+
+      if (isTransitioning) {
+        return;
+      }
+
+      if (quizState.currentLevelIndex !== levelIndex || quizState.currentQuestionIndex !== questionIndex) {
+        return;
+      }
+
+      const selectedIndex = quizState.answers?.[levelIndex]?.[questionIndex];
+      if (selectedIndex === null || selectedIndex === undefined) {
+        return;
+      }
+
+      if (isLastLevel) {
+        calculateScore();
+        persistState();
+        renderResult();
+      } else {
+        showLevelTransition(levelIndex + 1);
+      }
+    } catch (error) {
+      console.error("Auto-advance failed:", error);
+    } finally {
+      recoverNavigationState();
+      debugLog("Auto advancing ended");
+    }
+  }, 1000);
+}
+
+function handleOptionKeydown(event) {
+  const active = document.activeElement;
+  if (!active || !active.classList.contains("option-card")) {
+    return;
+  }
+
+  if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+    event.preventDefault();
+    moveOptionFocus(1);
+    return;
+  }
+
+  if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+    event.preventDefault();
+    moveOptionFocus(-1);
+    return;
+  }
+
+  if ((event.key === "Enter" || event.key === " ") && !active.disabled) {
+    event.preventDefault();
+    const selectedIndex = Number(active.dataset.index);
+    if (Number.isInteger(selectedIndex)) {
+      handleAnswer(selectedIndex);
+    }
+  }
+}
+
+function moveOptionFocus(step) {
+  if (!refs.optionsContainer) {
+    return;
+  }
+
+  const options = Array.from(refs.optionsContainer.querySelectorAll(".option-card:not([disabled])"));
+  if (options.length === 0) {
+    return;
+  }
+
+  let currentIndex = options.findIndex((option) => option === document.activeElement);
+  if (currentIndex < 0) {
+    currentIndex = 0;
+  }
+
+  const nextIndex = (currentIndex + step + options.length) % options.length;
+
+  options.forEach((option, index) => {
+    option.tabIndex = index === nextIndex ? 0 : -1;
+  });
+
+  options[nextIndex].focus();
+}
+
+function calculateScore() {
+  if (!quizData || !isStateReady()) {
+    quizState.score = 0;
+    return 0;
+  }
+
+  let correctCount = 0;
+
+  quizData.levels.forEach((levelObj, levelIndex) => {
+    levelObj.questions.forEach((questionObj, questionIndex) => {
+      if (quizState.answers[levelIndex][questionIndex] === questionObj.answerIndex) {
+        correctCount += 1;
+      }
+    });
+  });
+
+  quizState.score = correctCount;
+  return correctCount;
+}
+
+function renderResult() {
+  if (hasFatalError || !quizData) {
+    return;
+  }
+
+  calculateScore();
+
+  const total = getTotalQuestions();
+  const percentage = total > 0 ? (quizState.score / total) * 100 : 0;
+  const passed = percentage >= 80;
+
+  refs.resultUsername.textContent = `Candidate: ${quizState.username}`;
+  refs.resultScore.textContent = `${quizState.score} / ${total}`;
+  refs.resultPercentage.textContent = `${percentage.toFixed(2)}%`;
+  refs.resultStatus.textContent = passed ? "PASS" : "FAIL";
+  refs.resultStatus.classList.toggle("pass", passed);
+  refs.resultStatus.classList.toggle("fail", !passed);
+
+  showScreen("result-screen");
+}
+
+function restartQuiz() {
+  clearTimers();
+  resetFlowFlags();
+  resetQuizState();
+  clearAllLocalStorage();
+
+  currentSeedMode = "off";
+  currentSeedValue = null;
+  currentQuizType = null;
+  currentDatasetVersion = "";
+  levelOrder = [];
+  quizData = null;
+  baseQuizMetadata = null;
+  questionLookupByKey = new Map();
+  mergedQuestionPools = createEmptyPoolMap(CORE_LEVEL_ORDER);
+
+  refs.quizTypeCards?.forEach((card) => {
+    card.classList.remove("selected");
+    card.setAttribute("aria-pressed", "false");
+  });
+
+  if (refs.quizSelectStartBtn) {
+    refs.quizSelectStartBtn.disabled = true;
+  }
+
+  refs.usernameInput.value = "";
+  refs.startError.textContent = "";
+  refs.quizSelectError.textContent = "";
+
+  applyAppMetadata({ title: DEFAULT_APP_TITLE, description: DEFAULT_APP_DESCRIPTION });
+  refs.introLevelCount.textContent = "3 Levels";
+  refs.introQuestionCount.textContent = "20 Questions Each";
+
+  showScreen("start-screen");
+}
+
+function getCurrentLevel() {
+  return quizData?.levels?.[quizState.currentLevelIndex] || null;
+}
+
+function getCurrentQuestion() {
+  const levelObj = getCurrentLevel();
+  return levelObj?.questions?.[quizState.currentQuestionIndex] || null;
+}
+
+function getTotalQuestions() {
+  if (!quizData || !Array.isArray(quizData.levels)) {
+    return 0;
+  }
+
+  return quizData.levels.reduce((sum, levelObj) => sum + (Array.isArray(levelObj.questions) ? levelObj.questions.length : 0), 0);
+}
+
+function getOverallQuestionPosition(levelIndex, questionPositionInLevel) {
+  if (!quizData || !Array.isArray(quizData.levels)) {
+    return 0;
+  }
+
+  let totalBeforeLevel = 0;
+
+  for (let index = 0; index < levelIndex; index += 1) {
+    const levelQuestions = quizData.levels[index]?.questions;
+    totalBeforeLevel += Array.isArray(levelQuestions) ? levelQuestions.length : 0;
+  }
+
+  return totalBeforeLevel + questionPositionInLevel;
+}
+
+function isStateReady() {
+  if (!quizData || !Array.isArray(quizData.levels) || !Array.isArray(quizState.answers)) {
+    return false;
+  }
+
+  if (quizState.answers.length !== quizData.levels.length) {
+    return false;
+  }
+
+  for (let levelIndex = 0; levelIndex < quizData.levels.length; levelIndex += 1) {
+    const questions = quizData.levels[levelIndex]?.questions;
+    const answers = quizState.answers[levelIndex];
+
+    if (!Array.isArray(questions) || !Array.isArray(answers) || answers.length !== questions.length) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function recoverNavigationState() {
+  if (!quizData || !isStateReady()) {
+    return;
+  }
+
+  const levelObj = getCurrentLevel();
+  if (!levelObj || !Array.isArray(levelObj.questions)) {
+    return;
+  }
+
+  const selectedIndex = quizState.answers[quizState.currentLevelIndex][quizState.currentQuestionIndex];
+  updateNavigation(selectedIndex, levelObj.questions.length);
+}
+
+function persistState() {
+  if (!quizData || hasFatalError || !isStateReady()) {
+    return;
+  }
+
+  try {
+    const payload = {
+      username: quizState.username,
+      currentLevelIndex: quizState.currentLevelIndex,
+      currentQuestionIndex: quizState.currentQuestionIndex,
+      answers: quizState.answers,
+      score: quizState.score,
+      selectedQuizType: currentQuizType,
+      selectedQuestionIdsByLevel: getSelectedQuestionIdsByLevel(),
+      datasetVersion: currentDatasetVersion,
+      seedMode: currentSeedMode,
+      seedValue: currentSeedValue,
+      savedAt: Date.now()
+    };
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+  } catch (error) {
+    console.warn("State persistence skipped.", error);
+  }
+}
+
+function getSelectedQuestionIdsByLevel() {
+  if (!quizData || !Array.isArray(quizData.levels)) {
+    return null;
+  }
+
+  const selection = {};
+
+  for (const levelObj of quizData.levels) {
+    const levelName = String(levelObj?.level || "").toLowerCase();
+    if (!levelName || !Array.isArray(levelObj.questions)) {
+      return null;
+    }
+
+    selection[levelName] = levelObj.questions.map((questionObj) => questionObj.id);
+  }
+
+  return selection;
+}
+
+function getSavedState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) {
+      return null;
+    }
+
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : null;
+  } catch (error) {
+    console.warn("Could not read previous state.", error);
+    return null;
+  }
+}
+
+function restoreState(savedState) {
+  if (!quizData) {
+    return false;
+  }
+
+  const normalized = normalizeSavedState(savedState);
+  if (!normalized) {
+    return false;
+  }
+
+  quizState.username = normalized.username;
+  quizState.currentLevelIndex = normalized.currentLevelIndex;
+  quizState.currentQuestionIndex = normalized.currentQuestionIndex;
+  quizState.answers = normalized.answers;
+
+  currentSeedMode = typeof savedState.seedMode === "string" ? savedState.seedMode : "off";
+  currentSeedValue = Number.isInteger(savedState.seedValue) ? savedState.seedValue : null;
+
+  calculateScore();
+  persistState();
+  return true;
+}
