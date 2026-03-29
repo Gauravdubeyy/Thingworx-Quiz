@@ -10,6 +10,7 @@ const QUIZ_SOURCES = [
 const REQUIRED_LEVELS = ["basic", "intermediate", "advanced"];
 const QUESTIONS_PER_LEVEL = 20;
 const DEBUG_MODE = QUERY_PARAMS.get("quizDebug") === "1";
+const AUTO_ADVANCE_ENABLED = QUERY_PARAMS.get("autoAdvance") !== "0";
 const SEED_MODE = String(QUERY_PARAMS.get("seedMode") || "").toLowerCase();
 const FIXED_SEED = String(QUERY_PARAMS.get("seed") || "").trim();
 const CATEGORY_TARGETS = { core: 10, scenario: 6, helpers: 4 };
@@ -35,9 +36,7 @@ let introIntervalId = null;
 let introTimeoutId = null;
 let transitionTimeoutId = null;
 let autoAdvanceTimeoutId = null;
-let isAutoAdvancing = false;
 let isTransitioning = false;
-let isAnswerCommitInProgress = false;
 let hasFatalError = false;
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -440,9 +439,7 @@ function buildIntroTrack() {
 function showFatalError(message) {
   hasFatalError = true;
   clearTimers();
-  isAutoAdvancing = false;
   isTransitioning = false;
-  isAnswerCommitInProgress = false;
   if (refs.fatalErrorMessage) {
     refs.fatalErrorMessage.textContent = message || "Unable to initialize quiz.";
   }
@@ -822,10 +819,7 @@ function renderOptions(questionObj, selectedIndex) {
 
   refs.optionsContainer.innerHTML = "";
 
-  const shouldLockInteractions =
-    selectedIndex !== null || isAnswerCommitInProgress || isAutoAdvancing || isTransitioning;
-
-  setOptionInteractionLock(shouldLockInteractions);
+  const shouldLockInteractions = selectedIndex !== null;
 
   questionObj.options.forEach((optionText, optionIndex) => {
     const button = document.createElement("button");
@@ -912,23 +906,17 @@ function updateNavigation(selectedIndex, questionCount) {
   }
 
   const isFirstOverall = quizState.currentLevelIndex === 0 && quizState.currentQuestionIndex === 0;
-  refs.backBtn.disabled = isFirstOverall || isAutoAdvancing || isTransitioning;
+  refs.backBtn.disabled = isFirstOverall;
 
   const isLastQuestion = quizState.currentQuestionIndex === questionCount - 1;
   const isLastLevel = quizState.currentLevelIndex === quizData.levels.length - 1;
-
-  if (isAutoAdvancing || isTransitioning || isAnswerCommitInProgress) {
-    refs.nextBtn.disabled = true;
-    refs.nextBtn.textContent = "Auto advancing...";
-    return;
-  }
 
   refs.nextBtn.textContent = isLastQuestion ? (isLastLevel ? "Finish Quiz" : "Next Level") : "Next";
   refs.nextBtn.disabled = selectedIndex === null;
 }
 
 function handleAnswer(selectedIndex) {
-  if (hasFatalError || isAutoAdvancing || isTransitioning || isAnswerCommitInProgress) {
+  if (hasFatalError || isTransitioning) {
     return;
   }
 
@@ -956,9 +944,6 @@ function handleAnswer(selectedIndex) {
     return;
   }
 
-  isAnswerCommitInProgress = true;
-  setOptionInteractionLock(true);
-
   quizState.answers[levelIndex][questionIndex] = selectedIndex;
   calculateScore();
   persistState();
@@ -966,52 +951,20 @@ function handleAnswer(selectedIndex) {
   const isLastQuestionInLevel = questionIndex === levelObj.questions.length - 1;
   const isLastLevel = levelIndex === quizData.levels.length - 1;
 
-  if (!isLastQuestionInLevel) {
-    isAnswerCommitInProgress = false;
-    console.log("Moving to next question");
-    renderQuestion();
-    smoothScrollToExplanation();
-    recoverNavigationState();
-    return;
-  }
-
-  isAutoAdvancing = true;
-  console.log("Auto advancing started");
   renderQuestion();
   smoothScrollToExplanation();
 
-  clearTimeout(autoAdvanceTimeoutId);
-  autoAdvanceTimeoutId = window.setTimeout(() => {
-    try {
-      console.log("Moving to next question");
-
-      if (levelIndex !== quizState.currentLevelIndex || questionIndex !== quizState.currentQuestionIndex) {
-        return;
-      }
-
-      if (isLastLevel) {
-        calculateScore();
-        persistState();
-        renderResult();
-        return;
-      }
-
-      showLevelTransition(levelIndex + 1);
-    } catch (error) {
-      console.error("Auto-advance failed:", error);
-    } finally {
-      isAnswerCommitInProgress = false;
-      isAutoAdvancing = false;
-      recoverNavigationState();
-      console.log("Auto advancing ended");
-    }
-  }, 1000);
+  if (isLastQuestionInLevel) {
+    scheduleOptionalAutoAdvance(levelIndex, questionIndex, isLastLevel);
+  }
 }
 
 function navigate(direction) {
-  if (hasFatalError || !quizData || isAutoAdvancing || isTransitioning || isAnswerCommitInProgress) {
+  if (hasFatalError || !quizData || isTransitioning) {
     return;
   }
+
+  cancelAutoAdvance();
 
   if (direction > 0) {
     moveNext();
@@ -1083,6 +1036,48 @@ function moveBack() {
     persistState();
     renderQuestion();
   }
+}
+
+function scheduleOptionalAutoAdvance(levelIndex, questionIndex, isLastLevel) {
+  if (!AUTO_ADVANCE_ENABLED) {
+    return;
+  }
+
+  console.log("Auto advancing started");
+  cancelAutoAdvance();
+
+  autoAdvanceTimeoutId = window.setTimeout(() => {
+    try {
+      console.log("Moving to next question");
+
+      if (isTransitioning) {
+        return;
+      }
+
+      if (quizState.currentLevelIndex !== levelIndex || quizState.currentQuestionIndex !== questionIndex) {
+        return;
+      }
+
+      const selectedIndex = quizState.answers?.[levelIndex]?.[questionIndex];
+      if (selectedIndex === null || selectedIndex === undefined) {
+        return;
+      }
+
+      if (isLastLevel) {
+        calculateScore();
+        persistState();
+        renderResult();
+        return;
+      }
+
+      showLevelTransition(levelIndex + 1);
+    } catch (error) {
+      console.error("Auto-advance failed:", error);
+    } finally {
+      recoverNavigationState();
+      console.log("Auto advancing ended");
+    }
+  }, 1000);
 }
 
 function handleOptionKeydown(event) {
@@ -1248,21 +1243,9 @@ function isStateReady() {
   return true;
 }
 
-function setOptionInteractionLock(locked) {
-  if (!refs.optionsContainer) {
-    return;
-  }
-
-  refs.optionsContainer.style.pointerEvents = locked ? "none" : "auto";
-}
-
 function recoverNavigationState() {
   if (!quizData || !isStateReady()) {
     return;
-  }
-
-  if (!isTransitioning) {
-    setOptionInteractionLock(false);
   }
 
   const levelObj = getCurrentLevel();
@@ -1454,19 +1437,21 @@ function clearTimers() {
   clearInterval(introIntervalId);
   clearTimeout(introTimeoutId);
   clearTimeout(transitionTimeoutId);
-  clearTimeout(autoAdvanceTimeoutId);
+  cancelAutoAdvance();
 
   introIntervalId = null;
   introTimeoutId = null;
   transitionTimeoutId = null;
+}
+
+function cancelAutoAdvance() {
+  clearTimeout(autoAdvanceTimeoutId);
   autoAdvanceTimeoutId = null;
 }
 
 function resetFlowFlags() {
-  isAutoAdvancing = false;
   isTransitioning = false;
-  isAnswerCommitInProgress = false;
-  setOptionInteractionLock(false);
+  cancelAutoAdvance();
 }
 
 function resetQuizState() {
