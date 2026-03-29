@@ -91,6 +91,16 @@ body {
   color: var(--muted);
 }
 
+.bank-note {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.bank-note-inline {
+  margin-top: 12px;
+}
+
 .screen {
   display: none;
 }

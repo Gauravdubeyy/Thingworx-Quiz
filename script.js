@@ -2,13 +2,17 @@
 "use strict";
 
 const STORAGE_KEY = "thingworxQuizState_v1";
+const QUERY_PARAMS = new URLSearchParams(window.location.search);
 const QUIZ_SOURCES = [
   { file: "thingworx-quiz-webapp.json", label: "Set 1" },
   { file: "thingworx-quiz.json", label: "Set 2" }
 ];
 const REQUIRED_LEVELS = ["basic", "intermediate", "advanced"];
 const QUESTIONS_PER_LEVEL = 20;
-const DEBUG_MODE = new URLSearchParams(window.location.search).get("quizDebug") === "1";
+const DEBUG_MODE = QUERY_PARAMS.get("quizDebug") === "1";
+const SEED_MODE = String(QUERY_PARAMS.get("seedMode") || "").toLowerCase();
+const FIXED_SEED = String(QUERY_PARAMS.get("seed") || "").trim();
+const CATEGORY_TARGETS = { core: 10, scenario: 6, helpers: 4 };
 
 const quizState = {
   username: "",
@@ -22,6 +26,9 @@ let quizData = null;
 let baseQuizMetadata = null;
 let mergedQuestionPools = createEmptyPoolMap();
 let questionLookupByKey = new Map();
+let currentDatasetVersion = "";
+let currentSeedMode = "off";
+let currentSeedValue = null;
 
 let refs = {};
 let introIntervalId = null;
@@ -120,8 +127,9 @@ async function loadQuiz() {
     mergedQuestionPools = mergeResult.pools;
     questionLookupByKey = mergeResult.lookup;
     baseQuizMetadata = mergeResult.baseMetadata;
+    currentDatasetVersion = buildDatasetVersion(sourcePayloads);
 
-    quizData = createRandomizedQuizData();
+    quizData = createRandomizedQuizData({ mode: "off", seedValue: null });
     if (!quizData) {
       throw new Error("Unable to create randomized quiz set.");
     }
@@ -225,6 +233,7 @@ function validateQuizPayload(data, sourceLabel) {
 function mergeQuizSources(sourcePayloads) {
   const pools = createEmptyPoolMap();
   const lookup = new Map();
+  const normalizedTextSeen = new Map();
 
   for (const entry of sourcePayloads) {
     for (const levelName of REQUIRED_LEVELS) {
@@ -238,6 +247,21 @@ function mergeQuizSources(sourcePayloads) {
 
         if (lookup.has(key)) {
           return { valid: false, message: `Duplicate question id '${question.id}' detected in '${levelName}'.` };
+        }
+
+        const normalizedQuestionText = normalizeQuestionText(question.question);
+        if (normalizedQuestionText) {
+          const existing = normalizedTextSeen.get(normalizedQuestionText);
+          if (existing && existing.source !== entry.source.label) {
+            warnLog(
+              `Duplicate-like question text detected between '${existing.id}' (${existing.source}) and '${question.id}' (${entry.source.label}) in level '${levelName}'.`
+            );
+          } else if (!existing) {
+            normalizedTextSeen.set(normalizedQuestionText, {
+              id: question.id,
+              source: entry.source.label
+            });
+          }
         }
 
         pools[levelName].push(question);
@@ -269,11 +293,13 @@ function mergeQuizSources(sourcePayloads) {
   };
 }
 
-function createRandomizedQuizData() {
+function createRandomizedQuizData(randomizationConfig) {
   if (!baseQuizMetadata) {
     return null;
   }
 
+  const config = randomizationConfig || { mode: "off", seedValue: null };
+  const levelRandomFactory = createLevelRandomFactory(config);
   const levels = REQUIRED_LEVELS.map((levelName) => {
     const pool = mergedQuestionPools[levelName];
 
@@ -281,7 +307,8 @@ function createRandomizedQuizData() {
       return null;
     }
 
-    const selected = shuffleFisherYates([...pool]).slice(0, QUESTIONS_PER_LEVEL);
+    const randomFn = levelRandomFactory(levelName);
+    const selected = selectQuestionsForLevel(levelName, pool, randomFn);
     debugLog(`Selected '${levelName}' questions: ${selected.length}`);
 
     return {
@@ -301,6 +328,42 @@ function createRandomizedQuizData() {
     description: baseQuizMetadata.description,
     levels
   };
+}
+
+function selectQuestionsForLevel(levelName, pool, randomFn) {
+  const buckets = {
+    core: [],
+    scenario: [],
+    helpers: [],
+    other: []
+  };
+
+  pool.forEach((questionObj) => {
+    const normalizedCategory = normalizeCategory(questionObj?.category);
+    if (buckets[normalizedCategory]) {
+      buckets[normalizedCategory].push(questionObj);
+    } else {
+      buckets.other.push(questionObj);
+    }
+  });
+
+  const canBalance =
+    buckets.core.length >= CATEGORY_TARGETS.core &&
+    buckets.scenario.length >= CATEGORY_TARGETS.scenario &&
+    buckets.helpers.length >= CATEGORY_TARGETS.helpers;
+
+  if (!canBalance) {
+    debugLog(`Category balance fallback for '${levelName}' (insufficient category distribution in pool).`);
+    return shuffleFisherYates([...pool], randomFn).slice(0, QUESTIONS_PER_LEVEL);
+  }
+
+  const balancedSelection = [
+    ...takeRandomItems(buckets.core, CATEGORY_TARGETS.core, randomFn),
+    ...takeRandomItems(buckets.scenario, CATEGORY_TARGETS.scenario, randomFn),
+    ...takeRandomItems(buckets.helpers, CATEGORY_TARGETS.helpers, randomFn)
+  ];
+
+  return shuffleFisherYates(balancedSelection, randomFn).slice(0, QUESTIONS_PER_LEVEL);
 }
 
 function createQuizDataFromSelectedIds(savedSelection) {
@@ -398,6 +461,13 @@ function initializeFromSavedAttempt() {
     return;
   }
 
+  if (!isSavedStateVersionCompatible(savedState)) {
+    clearSavedState();
+    refs.startError.textContent = "Question bank version changed. Please start a new attempt.";
+    showScreen("start-screen");
+    return;
+  }
+
   const shouldResume = window.confirm("Resume previous attempt?");
 
   if (!shouldResume) {
@@ -452,6 +522,17 @@ function getSavedState() {
   }
 }
 
+function isSavedStateVersionCompatible(savedState) {
+  if (!savedState || typeof savedState !== "object") {
+    return false;
+  }
+
+  const savedVersion = String(savedState.datasetVersion || "");
+  const currentVersion = String(currentDatasetVersion || "");
+
+  return Boolean(savedVersion) && Boolean(currentVersion) && savedVersion === currentVersion;
+}
+
 function restoreState(savedState) {
   if (!quizData) {
     return false;
@@ -466,6 +547,8 @@ function restoreState(savedState) {
   quizState.currentLevelIndex = normalized.currentLevelIndex;
   quizState.currentQuestionIndex = normalized.currentQuestionIndex;
   quizState.answers = normalized.answers;
+  currentSeedMode = typeof savedState.seedMode === "string" ? savedState.seedMode : "off";
+  currentSeedValue = Number.isInteger(savedState.seedValue) ? savedState.seedValue : null;
 
   calculateScore();
   persistState();
@@ -524,7 +607,10 @@ function persistState() {
       currentQuestionIndex: quizState.currentQuestionIndex,
       answers: quizState.answers,
       score: quizState.score,
-      selectedQuestionIdsByLevel: getSelectedQuestionIdsByLevel()
+      selectedQuestionIdsByLevel: getSelectedQuestionIdsByLevel(),
+      datasetVersion: currentDatasetVersion,
+      seedMode: currentSeedMode,
+      seedValue: currentSeedValue
     };
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
@@ -591,12 +677,15 @@ function initializeState(username) {
 
   resetFlowFlags();
 
-  const randomizedQuiz = createRandomizedQuizData();
+  const randomizationConfig = resolveRandomizationConfig(username);
+  const randomizedQuiz = createRandomizedQuizData(randomizationConfig);
   if (!randomizedQuiz) {
     showFatalError("Unable to generate randomized quiz questions.");
     return;
   }
 
+  currentSeedMode = randomizationConfig.mode;
+  currentSeedValue = randomizationConfig.seedValue;
   quizData = randomizedQuiz;
   buildIntroTrack();
 
@@ -1071,12 +1160,8 @@ function restartQuiz() {
   resetFlowFlags();
   resetQuizState();
   clearAllLocalStorage();
-
-  const randomizedQuiz = createRandomizedQuizData();
-  if (randomizedQuiz) {
-    quizData = randomizedQuiz;
-    buildIntroTrack();
-  }
+  currentSeedMode = "off";
+  currentSeedValue = null;
 
   refs.usernameInput.value = "";
   refs.startError.textContent = "";
@@ -1164,17 +1249,131 @@ function getLevelByName(data, levelName) {
   return data.levels.find((levelObj) => String(levelObj?.level || "").toLowerCase() === levelName) || null;
 }
 
+function buildDatasetVersion(sourcePayloads) {
+  return sourcePayloads
+    .map((entry) => `${entry.source.file}:${String(entry.data?.version || "unknown")}`)
+    .sort()
+    .join("|");
+}
+
+function resolveRandomizationConfig(username) {
+  if (FIXED_SEED) {
+    return {
+      mode: "fixed",
+      seedValue: hashStringToSeed(FIXED_SEED),
+      seedDescriptor: `fixed:${FIXED_SEED}`
+    };
+  }
+
+  if (SEED_MODE === "user") {
+    const normalizedUser = normalizeSeedPart(username) || "anonymous";
+    return {
+      mode: "user",
+      seedValue: hashStringToSeed(`user:${normalizedUser}`),
+      seedDescriptor: `user:${normalizedUser}`
+    };
+  }
+
+  if (SEED_MODE === "attempt") {
+    const normalizedUser = normalizeSeedPart(username) || "anonymous";
+    const descriptor = `attempt:${normalizedUser}:${Date.now()}`;
+    return {
+      mode: "attempt",
+      seedValue: hashStringToSeed(descriptor),
+      seedDescriptor: descriptor
+    };
+  }
+
+  return { mode: "off", seedValue: null, seedDescriptor: null };
+}
+
+function createLevelRandomFactory(randomizationConfig) {
+  if (!randomizationConfig || !Number.isInteger(randomizationConfig.seedValue)) {
+    return () => Math.random;
+  }
+
+  return (levelName) => {
+    const mixedSeed = mixSeeds(
+      randomizationConfig.seedValue,
+      hashStringToSeed(`level:${String(levelName || "").toLowerCase()}`)
+    );
+    return createMulberry32(mixedSeed);
+  };
+}
+
 function buildQuestionKey(levelName, questionId) {
   return `${levelName}::${String(questionId).trim()}`;
 }
 
-function shuffleFisherYates(items) {
+function shuffleFisherYates(items, randomFn = Math.random) {
   for (let index = items.length - 1; index > 0; index -= 1) {
-    const randomIndex = Math.floor(Math.random() * (index + 1));
+    const randomIndex = Math.floor(randomFn() * (index + 1));
     [items[index], items[randomIndex]] = [items[randomIndex], items[index]];
   }
 
   return items;
+}
+
+function takeRandomItems(items, count, randomFn) {
+  return shuffleFisherYates([...items], randomFn).slice(0, count);
+}
+
+function normalizeCategory(categoryValue) {
+  const normalized = String(categoryValue || "").trim().toLowerCase();
+
+  if (normalized.startsWith("core")) {
+    return "core";
+  }
+
+  if (normalized.startsWith("scenario")) {
+    return "scenario";
+  }
+
+  if (normalized === "helper" || normalized.startsWith("helpers")) {
+    return "helpers";
+  }
+
+  return "other";
+}
+
+function normalizeQuestionText(text) {
+  return String(text || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\\s]/g, " ")
+    .replace(/\\s+/g, " ")
+    .trim();
+}
+
+function normalizeSeedPart(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function hashStringToSeed(value) {
+  const input = String(value || "");
+  let hash = 2166136261;
+
+  for (let index = 0; index < input.length; index += 1) {
+    hash ^= input.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+
+  return hash >>> 0;
+}
+
+function mixSeeds(seedA, seedB) {
+  return (seedA ^ seedB) >>> 0;
+}
+
+function createMulberry32(seed) {
+  let state = seed >>> 0;
+
+  return () => {
+    state = (state + 0x6d2b79f5) >>> 0;
+    let t = state;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
 }
 
 function createEmptyPoolMap() {
@@ -1259,4 +1458,8 @@ function debugLog(message) {
   if (DEBUG_MODE) {
     console.log(`[QuizDebug] ${message}`);
   }
+}
+
+function warnLog(message) {
+  console.warn(`[QuizWarning] ${message}`);
 }
