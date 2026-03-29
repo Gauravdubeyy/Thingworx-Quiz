@@ -1,0 +1,863 @@
+{
+    "app": "thingworx-quiz",
+    "version": "2.0",
+    "title": "PTC ThingWorx MCQ Quiz Bank – Set 2",
+    "description": "Second set of 60 MCQs for a web app: 20 basic, 20 intermediate, 20 advanced. All questions are different from Set 1.",
+    "levels": [
+        {
+            "level": "basic",
+            "questions": [
+                {
+                    "id": "basic2-1",
+                    "category": "core",
+                    "question": "Which best describes ThingWorx Composer from a beginner’s perspective?",
+                    "options": [
+                        "A runtime-only viewer for Mashups",
+                        "A modeling environment where you define Things, services, and Mashups",
+                        "A dedicated time-series database engine",
+                        "A command-line tool for deploying edge devices"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "A modeling environment where you define Things, services, and Mashups",
+                    "explanation": "ThingWorx Composer is the main design-time tool used to model entities, define services, and configure Mashups on the platform.[web:2]"
+                },
+                {
+                    "id": "basic2-2",
+                    "category": "core",
+                    "question": "In a beginner ThingWorx app, where do you typically bind Thing properties to widgets for display?",
+                    "options": [
+                        "In the Edge MicroServer configuration",
+                        "In the Mashup Builder data and widget binding panels",
+                        "In the file repository Thing",
+                        "In the platform’s persistence provider settings"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "In the Mashup Builder data and widget binding panels",
+                    "explanation": "Mashup Builder lets you bind Thing properties and service outputs to widgets to create interactive screens.[web:14]"
+                },
+                {
+                    "id": "basic2-3",
+                    "category": "core",
+                    "question": "Which entity is commonly used to group common configuration such as connection details that multiple Things share?",
+                    "options": [
+                        "Thing Shape",
+                        "Thing Template",
+                        "Resource",
+                        "Persistence Provider"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "Thing Template",
+                    "explanation": "A Thing Template can centralize shared configuration and behavior that all derived Things use.[web:23]"
+                },
+                {
+                    "id": "basic2-4",
+                    "category": "core",
+                    "question": "What is the main purpose of a Thing Shape?",
+                    "options": [
+                        "To store historical data for Things",
+                        "To provide reusable sets of properties and services that different Templates or Things can implement",
+                        "To define user interface layouts",
+                        "To create user accounts"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "To provide reusable sets of properties and services that different Templates or Things can implement",
+                    "explanation": "Thing Shapes hold shared capabilities that can be implemented by multiple Thing Templates and Things.[web:23][web:26]"
+                },
+                {
+                    "id": "basic2-5",
+                    "category": "core",
+                    "question": "Which best describes an INFOTABLE in ThingWorx?",
+                    "options": [
+                        "A single numeric property",
+                        "A binary content file",
+                        "A tabular data structure often described by a Data Shape",
+                        "A user role definition"
+                    ],
+                    "answerIndex": 2,
+                    "answerText": "A tabular data structure often described by a Data Shape",
+                    "explanation": "INFOTABLE is the standard type for tabular data, typically defined by a Data Shape.[web:24]"
+                },
+                {
+                    "id": "basic2-6",
+                    "category": "core",
+                    "question": "What does a Value Stream automatically log when configured on a Thing?",
+                    "options": [
+                        "Only user logins",
+                        "Property value changes that are marked as logged",
+                        "Mashup navigation history",
+                        "File uploads to repositories"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "Property value changes that are marked as logged",
+                    "explanation": "When a property on a Thing is set to logged and linked to a Value Stream, its changes are automatically recorded.[web:19]"
+                },
+                {
+                    "id": "basic2-7",
+                    "category": "core",
+                    "question": "Which entity would you use to store files such as documents, images, or CSV exports in ThingWorx?",
+                    "options": [
+                        "Data Table",
+                        "Value Stream",
+                        "File Repository Thing",
+                        "Organization"
+                    ],
+                    "answerIndex": 2,
+                    "answerText": "File Repository Thing",
+                    "explanation": "File Repository Things provide access to files stored on the platform’s file system for upload and download.[web:8]"
+                },
+                {
+                    "id": "basic2-8",
+                    "category": "core",
+                    "question": "What is the purpose of the Organizations entity in ThingWorx?",
+                    "options": [
+                        "To graphically design Mashups",
+                        "To model hierarchical relationships such as business units for visibility and security",
+                        "To store device telemetry",
+                        "To host external databases"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "To model hierarchical relationships such as business units for visibility and security",
+                    "explanation": "Organizations model hierarchies (like regions or departments) that can be used for entity visibility and access control.[web:8]"
+                },
+                {
+                    "id": "basic2-9",
+                    "category": "core",
+                    "question": "Which entity is primarily responsible for defining what a logged-in user can or cannot do in ThingWorx?",
+                    "options": [
+                        "Thing Template",
+                        "User and User Group permissions",
+                        "Data Shape",
+                        "Value Stream"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "User and User Group permissions",
+                    "explanation": "Users and user groups have permissions and visibility settings that control their access to entities and services.[web:8]"
+                },
+                {
+                    "id": "basic2-10",
+                    "category": "core",
+                    "question": "What is a simple way to test a service you created on a Thing in Composer?",
+                    "options": [
+                        "Only by calling it from an Edge device",
+                        "By running it from the Services tab’s Test area in Composer",
+                        "By restarting the platform",
+                        "By editing the persistence provider"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "By running it from the Services tab’s Test area in Composer",
+                    "explanation": "Composer provides a Test area on the Services tab where you can execute services and see their results.[web:2]"
+                },
+                {
+                    "id": "basic2-11",
+                    "category": "scenario",
+                    "question": "You want a simple list showing all connected devices and whether each is online or offline. Which basic design is most appropriate?",
+                    "options": [
+                        "A Mashup with a Grid widget bound to a Thing service returning an INFOTABLE of device status",
+                        "A Value Stream with numeric aggregation",
+                        "A File Repository with one file per Thing",
+                        "An Organization with regions only"
+                    ],
+                    "answerIndex": 0,
+                    "answerText": "A Mashup with a Grid widget bound to a Thing service returning an INFOTABLE of device status",
+                    "explanation": "A service returning an INFOTABLE of devices can be bound to a Grid widget in a Mashup to display their states.[web:14]"
+                },
+                {
+                    "id": "basic2-12",
+                    "category": "scenario",
+                    "question": "Your operator Mashup should allow the user to manually set a Boolean property 'RemoteEnabled' on a pump Thing. What is a straightforward approach?",
+                    "options": [
+                        "Bind a Button widget’s click event to a service that sets the property",
+                        "Edit the property only in Composer",
+                        "Use a Value Stream to configure the property",
+                        "Use a Stream Thing for configuration"
+                    ],
+                    "answerIndex": 0,
+                    "answerText": "Bind a Button widget’s click event to a service that sets the property",
+                    "explanation": "You typically expose a service that updates the property and bind a button click or toggle widget to that service in the Mashup.[web:14]"
+                },
+                {
+                    "id": "basic2-13",
+                    "category": "scenario",
+                    "question": "You are building a basic dashboard for energy meters with numeric values and trend charts. Which two Widget types are most likely to be used?",
+                    "options": [
+                        "Image and Video widgets",
+                        "Property Display and Time Series Chart widgets",
+                        "File Upload and Text Area widgets",
+                        "Tree and Menu widgets"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "Property Display and Time Series Chart widgets",
+                    "explanation": "Numeric and historical data are typically shown using property/value display and time-series chart widgets on a Mashup.[web:14]"
+                },
+                {
+                    "id": "basic2-14",
+                    "category": "scenario",
+                    "question": "A simple manufacturing KPI screen should update every 10 seconds. How can you trigger periodic updates without user interaction?",
+                    "options": [
+                        "Using a Timer or Auto-Refresh widget that repeatedly invokes a data service",
+                        "Rebuilding the Mashup every time",
+                        "Restarting the ThingWorx server",
+                        "Manually pressing a button each time"
+                    ],
+                    "answerIndex": 0,
+                    "answerText": "Using a Timer or Auto-Refresh widget that repeatedly invokes a data service",
+                    "explanation": "Timer-style widgets can periodically call services to refresh data on a Mashup.[web:14]"
+                },
+                {
+                    "id": "basic2-15",
+                    "category": "scenario",
+                    "question": "A beginner developer wants to expose a total production count from several Machines. Which approach is the most straightforward?",
+                    "options": [
+                        "Create one Thing with one property per Machine and no services",
+                        "Write a service that sums properties from several Machine Things and return an INFOTABLE or number",
+                        "Create a separate Mashup per Machine only",
+                        "Use only Organizations to aggregate data"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "Write a service that sums properties from several Machine Things and return an INFOTABLE or number",
+                    "explanation": "Aggregating values is commonly done with a server-side service that reads properties from multiple Things and returns a computed result.[web:2]"
+                },
+                {
+                    "id": "basic2-16",
+                    "category": "scenario",
+                    "question": "You want to quickly prototype an IoT application to monitor a handful of sensors without writing much custom code. Which feature of ThingWorx supports this?",
+                    "options": [
+                        "Low-code modeling with Things and Mashups",
+                        "Mandatory custom Java extensions",
+                        "Only command-line scripts",
+                        "Direct editing of database tables"
+                    ],
+                    "answerIndex": 0,
+                    "answerText": "Low-code modeling with Things and Mashups",
+                    "explanation": "ThingWorx provides a low-code, model-driven environment that lets you create IoT applications largely through configuration.[web:2]"
+                },
+                {
+                    "id": "basic2-17",
+                    "category": "helpers",
+                    "question": "At a basic level, what does ThingWorx Kepware Server provide to a ThingWorx solution?",
+                    "options": [
+                        "A built-in SQL database",
+                        "Industrial protocol connectivity between PLCs/devices and ThingWorx",
+                        "A browser-based Mashup layout engine",
+                        "User management and SSO"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "Industrial protocol connectivity between PLCs/devices and ThingWorx",
+                    "explanation": "Kepware acts as an industrial connectivity layer that communicates with PLCs and devices using protocols like OPC and exposes data to ThingWorx.[web:34][web:36]"
+                },
+                {
+                    "id": "basic2-18",
+                    "category": "helpers",
+                    "question": "Which is a common use of ThingWorx Flow in simple integrations?",
+                    "options": [
+                        "Modeling Things and Thing Templates",
+                        "Orchestrating workflows that call external systems like SAP or email",
+                        "Configuring the platform’s persistence providers",
+                        "Defining Mashup layout containers"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "Orchestrating workflows that call external systems like SAP or email",
+                    "explanation": "ThingWorx Flow is used to build workflows that integrate ThingWorx data and events with external systems via connectors.[web:3]"
+                },
+                {
+                    "id": "basic2-19",
+                    "category": "helpers",
+                    "question": "At a beginner level, what is the main purpose of an AWS IoT or AWS connector in a ThingWorx solution?",
+                    "options": [
+                        "To style Mashups with CSS",
+                        "To move IoT data between ThingWorx and AWS services",
+                        "To replace all Thing Templates",
+                        "To manage on-premise databases"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "To move IoT data between ThingWorx and AWS services",
+                    "explanation": "Connectors allow ThingWorx to send data to and receive data from AWS for analytics and other cloud workloads.[web:32]"
+                },
+                {
+                    "id": "basic2-20",
+                    "category": "helpers",
+                    "question": "Which statement about connectivity is true for a basic ThingWorx architecture?",
+                    "options": [
+                        "ThingWorx only accepts manual CSV uploads",
+                        "Connectivity can be achieved both via direct device SDKs and via gateways like Kepware",
+                        "Only devices that run Composer can connect",
+                        "Connectivity is limited to HTTP POST requests"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "Connectivity can be achieved both via direct device SDKs and via gateways like Kepware",
+                    "explanation": "Devices can connect using ThingWorx Edge SDKs or through connectivity products such as Kepware that bridge industrial protocols to ThingWorx.[web:2][web:34]"
+                }
+            ]
+        },
+        {
+            "level": "intermediate",
+            "questions": [
+                {
+                    "id": "intermediate2-1",
+                    "category": "core",
+                    "question": "Which type of property is most appropriate for representing a temperature that comes from an OPC-connected sensor and changes frequently?",
+                    "options": [
+                        "A persistent, logged numeric property on the Thing",
+                        "A design-time only constant",
+                        "A Mashup local parameter",
+                        "A user name property"
+                    ],
+                    "answerIndex": 0,
+                    "answerText": "A persistent, logged numeric property on the Thing",
+                    "explanation": "Frequently changing sensor values are typically modeled as numeric properties that can be persisted and logged in a Value Stream.[web:19]"
+                },
+                {
+                    "id": "intermediate2-2",
+                    "category": "core",
+                    "question": "Which statement about Tags in ThingWorx is correct?",
+                    "options": [
+                        "Tags are only used for file uploads",
+                        "Tags allow you to categorize entities to simplify search and organization",
+                        "Tags replace Organizations for security",
+                        "Tags can only be applied to Mashups"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "Tags allow you to categorize entities to simplify search and organization",
+                    "explanation": "Model tags are metadata that help group and search entities by functional, organizational, or other criteria.[web:8]"
+                },
+                {
+                    "id": "intermediate2-3",
+                    "category": "core",
+                    "question": "In an intermediate app, why might you implement common alarm logic in a Thing Shape rather than repeating it on each Thing?",
+                    "options": [
+                        "Shapes cannot contain logic",
+                        "To centralize and reuse alarm logic across many asset Things",
+                        "Because Shapes are only for UI",
+                        "Because Templates are read-only"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "To centralize and reuse alarm logic across many asset Things",
+                    "explanation": "Placing alarm logic in a Shape that many Things implement improves reuse and maintainability.[web:23][web:26]"
+                },
+                {
+                    "id": "intermediate2-4",
+                    "category": "core",
+                    "question": "Which statement about runtime permissions is accurate?",
+                    "options": [
+                        "Runtime permissions control who can execute services and read properties",
+                        "Runtime permissions only apply to Mashups",
+                        "Runtime permissions are set globally and cannot vary per entity",
+                        "Runtime permissions are not supported"
+                    ],
+                    "answerIndex": 0,
+                    "answerText": "Runtime permissions control who can execute services and read properties",
+                    "explanation": "ThingWorx supports design-time and runtime permissions; runtime governs access to services and data at run time.[web:8]"
+                },
+                {
+                    "id": "intermediate2-5",
+                    "category": "core",
+                    "question": "Why is it recommended to avoid defining many custom properties directly on a Thing when a Thing Template exists?",
+                    "options": [
+                        "Things cannot have properties",
+                        "It breaks reuse and makes it harder to propagate changes across all assets",
+                        "Thing Templates cannot be extended",
+                        "Properties must always be defined on Mashups"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "It breaks reuse and makes it harder to propagate changes across all assets",
+                    "explanation": "Defining shared properties on the Template or Shape ensures consistency as assets scale.[web:26]"
+                },
+                {
+                    "id": "intermediate2-6",
+                    "category": "core",
+                    "question": "For moderate volumes of event entries from multiple Things with different schemas, which storage pattern is typically more suitable?",
+                    "options": [
+                        "One Data Table per Thing",
+                        "A shared Stream for generic events",
+                        "A single file repository",
+                        "A Mashup parameter"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "A shared Stream for generic events",
+                    "explanation": "Streams are suited to heterogeneous, event-style entries coming from multiple Things.[web:19][web:22]"
+                },
+                {
+                    "id": "intermediate2-7",
+                    "category": "core",
+                    "question": "Which built-in mechanism helps you record when a Thing property crosses a particular limit, in addition to Events?",
+                    "options": [
+                        "Alert definitions on properties",
+                        "Value Stream only",
+                        "Mashup-only scripts",
+                        "File repositories"
+                    ],
+                    "answerIndex": 0,
+                    "answerText": "Alert definitions on properties",
+                    "explanation": "Property alerts let you declare thresholds that trigger alert states and can be tied to further logic.[web:5]"
+                },
+                {
+                    "id": "intermediate2-8",
+                    "category": "core",
+                    "question": "When querying a Value Stream for a property history, which type of result is typically returned?",
+                    "options": [
+                        "A raw SQL cursor",
+                        "A single scalar value",
+                        "An INFOTABLE with time-stamped rows",
+                        "A file handle"
+                    ],
+                    "answerIndex": 2,
+                    "answerText": "An INFOTABLE with time-stamped rows",
+                    "explanation": "Value Stream queries return an INFOTABLE where each row contains a timestamp and value for the property.[web:19]"
+                },
+                {
+                    "id": "intermediate2-9",
+                    "category": "core",
+                    "question": "Which is a good reason to use a Data Table instead of a Stream?",
+                    "options": [
+                        "You need primary key–based lookups over relatively static reference data",
+                        "You only have numeric sensor readings",
+                        "You need high-frequency time-series logging",
+                        "You are storing image binaries"
+                    ],
+                    "answerIndex": 0,
+                    "answerText": "You need primary key–based lookups over relatively static reference data",
+                    "explanation": "Data Tables behave like keyed tables and are best for configuration or reference records.[web:22][web:24]"
+                },
+                {
+                    "id": "intermediate2-10",
+                    "category": "core",
+                    "question": "What is a common use of Resources in ThingWorx?",
+                    "options": [
+                        "To host edge device configurations",
+                        "To provide shared utility services and code libraries across the model",
+                        "To store telemetry history",
+                        "To manage user passwords"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "To provide shared utility services and code libraries across the model",
+                    "explanation": "Resource entities are often used to host reusable services and helper functions.[web:8]"
+                },
+                {
+                    "id": "intermediate2-11",
+                    "category": "scenario",
+                    "question": "You are designing a plant overview Mashup that loads slowly because many services fire at once. Which optimization is a reasonable next step?",
+                    "options": [
+                        "Call all services from a single master service and bind the result",
+                        "Add more random widgets",
+                        "Increase the polling rate for every service",
+                        "Disable all caching"
+                    ],
+                    "answerIndex": 0,
+                    "answerText": "Call all services from a single master service and bind the result",
+                    "explanation": "Aggregating data retrieval into a single service reduces client–server round-trips and simplifies bindings.[web:8]"
+                },
+                {
+                    "id": "intermediate2-12",
+                    "category": "scenario",
+                    "question": "You have a Mashup for operators and another for supervisors; both show machine lists but with different detail. How could you avoid duplicating list logic?",
+                    "options": [
+                        "Place the list in a Thing Shape Mashup that both screens embed",
+                        "Copy and paste widgets between Mashups",
+                        "Put everything into one giant Mashup",
+                        "Use only Composer views"
+                    ],
+                    "answerIndex": 0,
+                    "answerText": "Place the list in a Thing Shape Mashup that both screens embed",
+                    "explanation": "Reusable Mashup components allow different layouts to share the same core list logic and bindings.[web:14]"
+                },
+                {
+                    "id": "intermediate2-13",
+                    "category": "scenario",
+                    "question": "A customer wants to filter a list of machines by site and by line, with results updating without full-page reload. Which pattern fits?",
+                    "options": [
+                        "Using Mashup parameters bound to Dropdown widgets that pass filters to a data service",
+                        "Using only server restarts",
+                        "Storing filters in a file repository",
+                        "Using Streams instead of services"
+                    ],
+                    "answerIndex": 0,
+                    "answerText": "Using Mashup parameters bound to Dropdown widgets that pass filters to a data service",
+                    "explanation": "Filtering is typically implemented by binding widget selections into service inputs via Mashup parameters.[web:14]"
+                },
+                {
+                    "id": "intermediate2-14",
+                    "category": "scenario",
+                    "question": "You need to expose a KPI summary service from a central 'PlantKPIs' Thing to several Mashups. What is a good security approach?",
+                    "options": [
+                        "Give everyone full design-time access",
+                        "Set appropriate runtime execute permissions on the KPI service and use visibility based on Organizations",
+                        "Disable all permissions",
+                        "Use only anonymous access"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "Set appropriate runtime execute permissions on the KPI service and use visibility based on Organizations",
+                    "explanation": "Intermediate apps often use organization-based visibility and specific runtime permissions to secure shared services.[web:8]"
+                },
+                {
+                    "id": "intermediate2-15",
+                    "category": "scenario",
+                    "question": "Your Value Stream contains millions of historical rows. A Mashup showing a full history chart is slow. What is a sensible optimization?",
+                    "options": [
+                        "Always request the entire history range",
+                        "Add time range inputs in the Mashup and query only the needed interval",
+                        "Delete the Value Stream",
+                        "Disable property logging"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "Add time range inputs in the Mashup and query only the needed interval",
+                    "explanation": "Limiting queries to relevant time windows reduces data transferred and speeds up charts.[web:19]"
+                },
+                {
+                    "id": "intermediate2-16",
+                    "category": "scenario",
+                    "question": "An engineering team wants to simulate sensor data on a development server without connecting real devices. How can they do this?",
+                    "options": [
+                        "Use services or timers on a SimulatedDevice Thing to periodically update properties",
+                        "Edit database tables directly",
+                        "Use only CSV imports",
+                        "Modify the production server"
+                    ],
+                    "answerIndex": 0,
+                    "answerText": "Use services or timers on a SimulatedDevice Thing to periodically update properties",
+                    "explanation": "Simulated device Things using scheduled services or timers are a common pattern for dev/test environments.[web:2]"
+                },
+                {
+                    "id": "intermediate2-17",
+                    "category": "helpers",
+                    "question": "In an intermediate integration, why might you use ThingWorx Flow instead of writing custom JavaScript services for each external call?",
+                    "options": [
+                        "Flow cannot call external systems",
+                        "Flow provides visual orchestration and connectors that simplify calling many external APIs",
+                        "Flow only styles Mashups",
+                        "Flow manages the database schema"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "Flow provides visual orchestration and connectors that simplify calling many external APIs",
+                    "explanation": "Flow offers connector-based, low-code integration with systems such as SAP, email, and messaging platforms.[web:3]"
+                },
+                {
+                    "id": "intermediate2-18",
+                    "category": "helpers",
+                    "question": "You must integrate with a legacy OPC DA server and a new MQTT-based sensor network. Which connectivity tool can help bridge both into ThingWorx?",
+                    "options": [
+                        "Only the platform’s REST API",
+                        "ThingWorx Kepware Server or Kepware Edge with appropriate drivers and MQTT interfaces",
+                        "Mashup Builder only",
+                        "Organizations"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "ThingWorx Kepware Server or Kepware Edge with appropriate drivers and MQTT interfaces",
+                    "explanation": "Kepware products can talk OPC DA, OPC UA, and MQTT, exposing data to ThingWorx through standard interfaces.[web:34][web:36]"
+                },
+                {
+                    "id": "intermediate2-19",
+                    "category": "helpers",
+                    "question": "An SAP team exposes an OData service with production order data. How can ThingWorx consume it without custom HTTP code in every Mashup?",
+                    "options": [
+                        "Use a ThingWorx Flow SAP OData connector and expose its services to Mashups",
+                        "Use only manual CSV uploads",
+                        "Edit platform database tables",
+                        "Use Streams for all calls"
+                    ],
+                    "answerIndex": 0,
+                    "answerText": "Use a ThingWorx Flow SAP OData connector and expose its services to Mashups",
+                    "explanation": "The SAP OData connector in Flow provides reusable services that can be bound to Mashups.[web:3]"
+                },
+                {
+                    "id": "intermediate2-20",
+                    "category": "helpers",
+                    "question": "Why might an intermediate solution choose to route some device data first to a cloud IoT hub (like AWS IoT) before ThingWorx?",
+                    "options": [
+                        "To avoid using Thing Templates",
+                        "To leverage cloud-side rules, analytics, and scaling before forwarding curated data to ThingWorx",
+                        "Because ThingWorx cannot receive MQTT",
+                        "To disable security"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "To leverage cloud-side rules, analytics, and scaling before forwarding curated data to ThingWorx",
+                    "explanation": "Cloud IoT hubs can handle ingestion and analytics at scale, and connectors can forward results into ThingWorx.[web:32]"
+                }
+            ]
+        },
+        {
+            "level": "advanced",
+            "questions": [
+                {
+                    "id": "advanced2-1",
+                    "category": "core",
+                    "question": "In a large-scale deployment, why is it recommended to factor shared behavior into multiple small Thing Shapes instead of one huge Shape?",
+                    "options": [
+                        "Because Shapes cannot be reused",
+                        "To improve composability, testability, and reduce unintended coupling between unrelated capabilities",
+                        "Because Templates cannot implement more than one Shape",
+                        "To avoid using Templates"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "To improve composability, testability, and reduce unintended coupling between unrelated capabilities",
+                    "explanation": "Smaller, focused Shapes keep the model modular and easier to maintain as the solution grows.[web:23][web:26]"
+                },
+                {
+                    "id": "advanced2-2",
+                    "category": "core",
+                    "question": "Which advanced modeling choice most directly affects the ability to extend an asset type over time without recreating all Instances?",
+                    "options": [
+                        "Selection of the base Thing Template and implemented Shapes",
+                        "Choice of Mashup theme",
+                        "Name of the INFOTABLE fields",
+                        "Choice of user passwords"
+                    ],
+                    "answerIndex": 0,
+                    "answerText": "Selection of the base Thing Template and implemented Shapes",
+                    "explanation": "Because the base Template cannot change later, choosing the right Template and Shape composition is critical for extensibility.[web:26]"
+                },
+                {
+                    "id": "advanced2-3",
+                    "category": "core",
+                    "question": "How can you encapsulate complex validation logic for a group of related properties so it can be reused across multiple asset types?",
+                    "options": [
+                        "Create a shared validation service on a Resource or Shape and call it from asset services",
+                        "Hard-code validation inside each Mashup widget",
+                        "Use only client-side JavaScript",
+                        "Store validation rules in a file repository"
+                    ],
+                    "answerIndex": 0,
+                    "answerText": "Create a shared validation service on a Resource or Shape and call it from asset services",
+                    "explanation": "Placing validation in reusable server-side services prevents duplication and ensures consistent enforcement.[web:8][web:23]"
+                },
+                {
+                    "id": "advanced2-4",
+                    "category": "core",
+                    "question": "For high-frequency telemetry where each asset has multiple numeric signals, which combination is typically best for long-term history and query performance?",
+                    "options": [
+                        "One Stream per signal with text payloads",
+                        "A Value Stream per asset for signal properties, with careful indexing and retention settings",
+                        "Storing only in Mashup session variables",
+                        "One Data Table row per sample"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "A Value Stream per asset for signal properties, with careful indexing and retention settings",
+                    "explanation": "Value Streams are optimized for time-series property history; per-asset design and retention improves scalability.[web:19][web:22]"
+                },
+                {
+                    "id": "advanced2-5",
+                    "category": "core",
+                    "question": "Which advanced Data Shape design helps support schema evolution in a production system?",
+                    "options": [
+                        "Never changing Data Shapes and recreating all data tables instead",
+                        "Using optional fields and version indicators to allow new fields without breaking existing consumers",
+                        "Deleting all unused fields during runtime",
+                        "Using only primitive types without metadata"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "Using optional fields and version indicators to allow new fields without breaking existing consumers",
+                    "explanation": "Designing Data Shapes with backward-compatible changes reduces impact when adding new columns.[web:24]"
+                },
+                {
+                    "id": "advanced2-6",
+                    "category": "core",
+                    "question": "In a multi-tenant ThingWorx solution, what is a common pattern for isolating data and access while keeping a shared model?",
+                    "options": [
+                        "Running a separate platform instance per tenant only",
+                        "Using tenant-aware Organizations, runtime visibility rules, and per-tenant asset instances that share Templates and Shapes",
+                        "Giving all tenants admin access",
+                        "Hard-coding tenant names in Mashups"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "Using tenant-aware Organizations, runtime visibility rules, and per-tenant asset instances that share Templates and Shapes",
+                    "explanation": "A shared meta-model with tenant-specific instances governed by Organizations and permissions is a typical pattern.[web:8][web:26]"
+                },
+                {
+                    "id": "advanced2-7",
+                    "category": "core",
+                    "question": "Which advanced security approach helps ensure that composable services cannot be misused by other developers in a large team?",
+                    "options": [
+                        "Exposing all services anonymously",
+                        "Using fine-grained runtime execute permissions at the service level and grouping them via Collections",
+                        "Storing passwords in clear text",
+                        "Disabling visibility rules"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "Using fine-grained runtime execute permissions at the service level and grouping them via Collections",
+                    "explanation": "Collections and fine-grained execute permissions help control who can invoke particular services.[web:8]"
+                },
+                {
+                    "id": "advanced2-8",
+                    "category": "core",
+                    "question": "In terms of digital twin fidelity, which practice improves the usefulness of your Thing models for operations teams?",
+                    "options": [
+                        "Keeping only a single aggregated status field",
+                        "Modeling key operational states, KPIs, and relationships (such as line–machine–sensor hierarchies) explicitly in the Thing model",
+                        "Using only one global Thing",
+                        "Avoiding any relationships between Things"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "Modeling key operational states, KPIs, and relationships (such as line–machine–sensor hierarchies) explicitly in the Thing model",
+                    "explanation": "Rich, structured digital twins reflect operational reality and support better monitoring and analysis.[web:2][web:33]"
+                },
+                {
+                    "id": "advanced2-9",
+                    "category": "core",
+                    "question": "Which approach best leverages the separation between modeling and visualization layers in ThingWorx?",
+                    "options": [
+                        "Embedding all business logic directly in Mashup JavaScript",
+                        "Keeping business logic in Thing and Resource services and using Mashups only for binding and interaction",
+                        "Using only client-side calculations",
+                        "Defining no services at all"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "Keeping business logic in Thing and Resource services and using Mashups only for binding and interaction",
+                    "explanation": "Placing business rules in server-side services ensures reusability and keeps UI concerns separate.[web:2][web:14]"
+                },
+                {
+                    "id": "advanced2-10",
+                    "category": "core",
+                    "question": "When designing a microservices-style architecture around ThingWorx, which pattern aligns best with scalable domain boundaries?",
+                    "options": [
+                        "One monolithic Thing for all functionality",
+                        "Multiple domain-specific Things and Resources with clear service interfaces and minimal cross-dependencies",
+                        "Centralizing all logic in one Resource",
+                        "Only using Mashup controllers"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "Multiple domain-specific Things and Resources with clear service interfaces and minimal cross-dependencies",
+                    "explanation": "Domain-focused services and clear interfaces reduce coupling and align with microservice principles.[web:8][web:26]"
+                },
+                {
+                    "id": "advanced2-11",
+                    "category": "scenario",
+                    "question": "You need to roll out a new calculated KPI across thousands of machine Things without manual edits. The KPI uses existing signals already modeled on a Shape. What is a robust strategy?",
+                    "options": [
+                        "Add the KPI property and calculation service to the shared Shape and deploy that Shape to all relevant Templates",
+                        "Edit each Thing individually",
+                        "Implement the KPI only in Mashup scripts",
+                        "Create a separate Value Stream per KPI"
+                    ],
+                    "answerIndex": 0,
+                    "answerText": "Add the KPI property and calculation service to the shared Shape and deploy that Shape to all relevant Templates",
+                    "explanation": "Updating a shared Shape ensures that all implementing Templates and Things inherit the new KPI logic.[web:23][web:26]"
+                },
+                {
+                    "id": "advanced2-12",
+                    "category": "scenario",
+                    "question": "An enterprise wants to maintain strict separation between development, test, and production ThingWorx environments while reusing the same model. What approach helps?",
+                    "options": [
+                        "Building everything directly in production",
+                        "Using export/import of entities, solution packages, and environment-specific configuration Things (for URLs, credentials, etc.)",
+                        "Sharing the same database for all environments",
+                        "Editing production Data Tables manually"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "Using export/import of entities, solution packages, and environment-specific configuration Things (for URLs, credentials, etc.)",
+                    "explanation": "Packaging and promoting model entities while externalizing environment-specific settings is a standard ALM pattern.[web:8]"
+                },
+                {
+                    "id": "advanced2-13",
+                    "category": "scenario",
+                    "question": "High-frequency telemetry from thousands of assets is now being persisted in a single Value Stream, and query performance is degrading. Which advanced refactor makes sense?",
+                    "options": [
+                        "Switching all history to one Data Table",
+                        "Partitioning history into multiple Value Streams by asset type or region and routing logging accordingly",
+                        "Logging only in Mashup widgets",
+                        "Disabling persistence providers"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "Partitioning history into multiple Value Streams by asset type or region and routing logging accordingly",
+                    "explanation": "Partitioning Value Streams reduces contention and improves query performance at scale.[web:19][web:22]"
+                },
+                {
+                    "id": "advanced2-14",
+                    "category": "scenario",
+                    "question": "A global manufacturer requires that each region can manage its own assets and dashboards while a central team can see everything. Which design aligns with this requirement?",
+                    "options": [
+                        "Creating one Organization per region, assigning user groups accordingly, and using visibility rules on Things and Mashups",
+                        "Giving all users full access",
+                        "Storing region names only in Data Tables",
+                        "Duplicating the entire model per region on separate servers"
+                    ],
+                    "answerIndex": 0,
+                    "answerText": "Creating one Organization per region, assigning user groups accordingly, and using visibility rules on Things and Mashups",
+                    "explanation": "Organizations and visibility rules allow hierarchical access control with global oversight.[web:8]"
+                },
+                {
+                    "id": "advanced2-15",
+                    "category": "scenario",
+                    "question": "Your customer wants to plug in new analytics microservices (for anomaly detection) without changing every Mashup. What is a flexible approach?",
+                    "options": [
+                        "Bind Mashups directly to each new microservice URL",
+                        "Define an abstraction layer of ThingWorx services that call external analytics, and keep Mashups bound to these stable services",
+                        "Hard-code URLs in client JavaScript",
+                        "Use only Value Streams"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "Define an abstraction layer of ThingWorx services that call external analytics, and keep Mashups bound to these stable services",
+                    "explanation": "An abstraction layer decouples UI from specific external analytics implementations.[web:8][web:33]"
+                },
+                {
+                    "id": "advanced2-16",
+                    "category": "scenario",
+                    "question": "Operations teams complain that an interactive dashboard sometimes shows stale data when new events arrive slightly out of order from multiple sources. Which design can address this?",
+                    "options": [
+                        "Ignoring timestamps and using arrival order",
+                        "Buffering updates in a Value Stream and rendering based on event timestamps instead of arrival times",
+                        "Disabling history",
+                        "Using only Streams for everything"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "Buffering updates in a Value Stream and rendering based on event timestamps instead of arrival times",
+                    "explanation": "Using timestamped entries in a Value Stream lets you reconstruct a consistent time-ordered view of events.[web:19][web:11]"
+                },
+                {
+                    "id": "advanced2-17",
+                    "category": "helpers",
+                    "question": "You want to ingest telemetry through AWS IoT Core and then forward selected data into ThingWorx for visualization. Which combination fits an advanced pattern?",
+                    "options": [
+                        "Only using CSV export/import",
+                        "AWS IoT rules to route messages to the ThingWorx AWS IoT Connector or HTTP endpoints, then mapping into Thing models",
+                        "Direct database replication",
+                        "Mashup-only integrations"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "AWS IoT rules to route messages to the ThingWorx AWS IoT Connector or HTTP endpoints, then mapping into Thing models",
+                    "explanation": "AWS IoT rules can forward data to ThingWorx via connectors or APIs as part of an integrated architecture.[web:32]"
+                },
+                {
+                    "id": "advanced2-18",
+                    "category": "helpers",
+                    "question": "A customer wants to use Kepware for on-premise connectivity but also forward certain tags to a cloud analytics platform directly. How can ThingWorx fit into this design?",
+                    "options": [
+                        "It cannot be used with Kepware",
+                        "ThingWorx can consume Kepware tags for operational dashboards while Kepware also republishes selected data to cloud endpoints",
+                        "ThingWorx must receive all traffic first",
+                        "Only Mashups can forward data"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "ThingWorx can consume Kepware tags for operational dashboards while Kepware also republishes selected data to cloud endpoints",
+                    "explanation": "Kepware can act as a hub, feeding ThingWorx for HMI while also streaming data to cloud services for analytics.[web:34][web:36]"
+                },
+                {
+                    "id": "advanced2-19",
+                    "category": "helpers",
+                    "question": "An SAP integration requires both synchronous queries (for dashboards) and asynchronous updates (for events). Which combination is appropriate?",
+                    "options": [
+                        "Only file-based batch updates",
+                        "OData-based synchronous services plus event-driven flows (for example, using ThingWorx Flow) to push updates",
+                        "Hard-coded SQL in ThingWorx",
+                        "Only email notifications"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "OData-based synchronous services plus event-driven flows (for example, using ThingWorx Flow) to push updates",
+                    "explanation": "Combining OData calls for queries with event-driven flows for updates meets both interaction patterns.[web:3][web:9]"
+                },
+                {
+                    "id": "advanced2-20",
+                    "category": "helpers",
+                    "question": "Why are extension-based connectors (for example, AWS, SAP, MQTT) preferable to ad‑hoc custom HTTP calls scattered across Mashups?",
+                    "options": [
+                        "They remove the need for authentication",
+                        "They provide centralized, testable integration points with supported configuration and upgrade paths",
+                        "They force all logic into the UI",
+                        "They cannot be reused"
+                    ],
+                    "answerIndex": 1,
+                    "answerText": "They provide centralized, testable integration points with supported configuration and upgrade paths",
+                    "explanation": "Using supported connectors concentrates integration logic in one place, simplifying maintenance and upgrades.[web:32][web:34][web:36]"
+                }
+            ]
+        }
+    ]
+}
