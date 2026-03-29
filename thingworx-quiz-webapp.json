@@ -1,0 +1,1056 @@
+{
+  "app": "thingworx-quiz",
+  "version": "1.0",
+  "title": "PTC ThingWorx MCQ Quiz Bank",
+  "description": "60 MCQs for a web app: 20 basic, 20 intermediate, 20 advanced.",
+  "levels": [
+    {
+      "level": "basic",
+      "questions": [
+        {
+          "id": "basic-1",
+          "category": "core",
+          "question": "In ThingWorx, what does a 'Thing' primarily represent?",
+          "options": [
+            "A user interface widget",
+            "A digital representation of a physical asset or logical system",
+            "A database table",
+            "A single sensor reading"
+          ],
+          "answerIndex": 1,
+          "answerText": "A digital representation of a physical asset or logical system",
+          "explanation": "A Thing is the digital representation, or digital twin, of a machine, device, or logical system in ThingWorx.",
+          "sourceIds": [
+            "web:2"
+          ]
+        },
+        {
+          "id": "basic-2",
+          "category": "core",
+          "question": "What is a Mashup in ThingWorx?",
+          "options": [
+            "A streaming analytics engine",
+            "A reusable data model",
+            "A web page used to visualize data and interact with the Thing model",
+            "A device connector"
+          ],
+          "answerIndex": 2,
+          "answerText": "A web page used to visualize data and interact with the Thing model",
+          "explanation": "A Mashup is a web page built in ThingWorx to visualize data and interact with modeled entities using widgets and bindings.",
+          "sourceIds": [
+            "web:14"
+          ]
+        },
+        {
+          "id": "basic-3",
+          "category": "core",
+          "question": "What is the role of ThingWorx Composer?",
+          "options": [
+            "It runs the MQTT broker for devices",
+            "It is the primary modeling and configuration environment for entities like Things, Data Shapes, and Mashups",
+            "It is a standalone SCADA system",
+            "It only edits JavaScript services"
+          ],
+          "answerIndex": 1,
+          "answerText": "It is the primary modeling and configuration environment for entities like Things, Data Shapes, and Mashups",
+          "explanation": "Composer is the main design-time environment used to model and configure ThingWorx entities.",
+          "sourceIds": [
+            "web:2"
+          ]
+        },
+        {
+          "id": "basic-4",
+          "category": "core",
+          "question": "What is a Thing Template?",
+          "options": [
+            "A UI template for Mashups",
+            "A base definition providing common properties, services, events, and subscriptions from which Things are created",
+            "A predefined SQL schema for data storage",
+            "A deployment package for extensions"
+          ],
+          "answerIndex": 1,
+          "answerText": "A base definition providing common properties, services, events, and subscriptions from which Things are created",
+          "explanation": "Thing Templates define shared behavior and structure for Things created from them.",
+          "sourceIds": [
+            "web:23"
+          ]
+        },
+        {
+          "id": "basic-5",
+          "category": "core",
+          "question": "What is a Data Shape in ThingWorx?",
+          "options": [
+            "A visualization layout specification",
+            "A named set of field definitions and metadata used to describe the structure of InfoTables and other entities",
+            "A reserved type only for streams",
+            "A file format for exporting data"
+          ],
+          "answerIndex": 1,
+          "answerText": "A named set of field definitions and metadata used to describe the structure of InfoTables and other entities",
+          "explanation": "A Data Shape defines fields and metadata that describe tabular structures like InfoTables.",
+          "sourceIds": [
+            "web:24"
+          ]
+        },
+        {
+          "id": "basic-6",
+          "category": "core",
+          "question": "What is a Value Stream mainly used for?",
+          "options": [
+            "Storing user accounts and roles",
+            "Storing time series history of a Thing's property values",
+            "Defining Mashup layouts",
+            "Managing Edge device firmware updates"
+          ],
+          "answerIndex": 1,
+          "answerText": "Storing time series history of a Thing's property values",
+          "explanation": "Value Streams are designed for historical property value storage and retrieval over time.",
+          "sourceIds": [
+            "web:19"
+          ]
+        },
+        {
+          "id": "basic-7",
+          "category": "core",
+          "question": "What is ThingWorx Edge primarily responsible for?",
+          "options": [
+            "Rendering Mashups in browsers",
+            "Providing industrial connectivity at the machine or sensor site and sending data securely to ThingWorx",
+            "Managing user authentication only",
+            "Running analytics models in the cloud"
+          ],
+          "answerIndex": 1,
+          "answerText": "Providing industrial connectivity at the machine or sensor site and sending data securely to ThingWorx",
+          "explanation": "ThingWorx Edge connects devices and sensors near the source and securely sends data to the platform.",
+          "sourceIds": [
+            "web:2",
+            "web:36"
+          ]
+        },
+        {
+          "id": "basic-8",
+          "category": "core",
+          "question": "Which statement best describes ThingWorx as a platform?",
+          "options": [
+            "A pure relational database engine",
+            "A low-code, model-driven industrial IoT platform for rapidly building applications and dashboards",
+            "A single-purpose SCADA replacement with no integration options",
+            "A messaging broker only"
+          ],
+          "answerIndex": 1,
+          "answerText": "A low-code, model-driven industrial IoT platform for rapidly building applications and dashboards",
+          "explanation": "ThingWorx is a model-driven IIoT platform for building applications, dashboards, and connected asset solutions.",
+          "sourceIds": [
+            "web:2"
+          ]
+        },
+        {
+          "id": "basic-9",
+          "category": "core",
+          "question": "What is a ThingWorx Event?",
+          "options": [
+            "A scheduled system backup",
+            "Any property update, regardless of importance",
+            "An interesting or critical property state that can trigger subscriptions and business logic",
+            "A user login attempt"
+          ],
+          "answerIndex": 2,
+          "answerText": "An interesting or critical property state that can trigger subscriptions and business logic",
+          "explanation": "Events represent important state changes that can trigger subscriptions and actions.",
+          "sourceIds": [
+            "web:2"
+          ]
+        },
+        {
+          "id": "basic-10",
+          "category": "core",
+          "question": "Which statement about Streams vs Value Streams is true at a basic level?",
+          "options": [
+            "Streams and Value Streams are identical",
+            "Streams and Value Streams are only for user data, not Thing data",
+            "Streams are general activity logs, while Value Streams focus on time-series property data of Things",
+            "Value Streams cannot be queried"
+          ],
+          "answerIndex": 2,
+          "answerText": "Streams are general activity logs, while Value Streams focus on time-series property data of Things",
+          "explanation": "Streams are suited to general logs, while Value Streams are optimized for Thing property history.",
+          "sourceIds": [
+            "web:19"
+          ]
+        },
+        {
+          "id": "basic-11",
+          "category": "scenario",
+          "question": "You need to create a simple dashboard to show live equipment temperatures and allow an operator to click and see more details. What should you build?",
+          "options": [
+            "Thing Template",
+            "Data Shape",
+            "Mashup using Mashup Builder",
+            "Value Stream"
+          ],
+          "answerIndex": 2,
+          "answerText": "Mashup using Mashup Builder",
+          "explanation": "Mashups are the standard way to create interactive dashboards and data-driven UI views in ThingWorx.",
+          "sourceIds": [
+            "web:14"
+          ]
+        },
+        {
+          "id": "basic-12",
+          "category": "scenario",
+          "question": "You have 100 pumps that all share the same set of properties and services. What is the best modeling approach?",
+          "options": [
+            "Create 100 separate Things with duplicated definitions",
+            "One Data Shape per pump",
+            "A single Thing implementing all pumps",
+            "Define a Pump Thing Template and create individual pump Things from it"
+          ],
+          "answerIndex": 3,
+          "answerText": "Define a Pump Thing Template and create individual pump Things from it",
+          "explanation": "A Thing Template lets multiple Things inherit the same common behavior and properties.",
+          "sourceIds": [
+            "web:23"
+          ]
+        },
+        {
+          "id": "basic-13",
+          "category": "scenario",
+          "question": "You must store a static mapping of error codes to error descriptions for lookup in Mashups. What is the most appropriate storage?",
+          "options": [
+            "Value Stream",
+            "Stream",
+            "Data Table with a Data Shape defining fields",
+            "Thing Template"
+          ],
+          "answerIndex": 2,
+          "answerText": "Data Table with a Data Shape defining fields",
+          "explanation": "Static reference data is best modeled using Data Tables with a defined schema.",
+          "sourceIds": [
+            "web:24"
+          ]
+        },
+        {
+          "id": "basic-14",
+          "category": "scenario",
+          "question": "You want to view historical trends of a single property, such as Temperature, from a device over time. Where should you store this history?",
+          "options": [
+            "Data Table",
+            "Thing property only, with no history",
+            "Value Stream associated with the Thing",
+            "Mashup widget state"
+          ],
+          "answerIndex": 2,
+          "answerText": "Value Stream associated with the Thing",
+          "explanation": "Value Streams are intended for historical property tracking over time.",
+          "sourceIds": [
+            "web:19"
+          ]
+        },
+        {
+          "id": "basic-15",
+          "category": "scenario",
+          "question": "You need a consistent structure for multiple InfoTables that all represent MachineStatus with id, state, and timestamp. What should you define first?",
+          "options": [
+            "Value Stream",
+            "Data Shape describing the MachineStatus fields",
+            "Thing Template",
+            "Mashup"
+          ],
+          "answerIndex": 1,
+          "answerText": "Data Shape describing the MachineStatus fields",
+          "explanation": "Data Shapes define reusable schemas for InfoTables and similar tabular structures.",
+          "sourceIds": [
+            "web:24"
+          ]
+        },
+        {
+          "id": "basic-16",
+          "category": "scenario",
+          "question": "You need to generate an alert when a property MotorTemperature exceeds a threshold and then perform a custom action. What mechanism should you use?",
+          "options": [
+            "Only a Mashup widget rule",
+            "Event plus Subscription on the Thing",
+            "Data Table script",
+            "Value Stream persistence provider"
+          ],
+          "answerIndex": 1,
+          "answerText": "Event plus Subscription on the Thing",
+          "explanation": "Events capture significant conditions, and subscriptions execute logic when those events occur.",
+          "sourceIds": [
+            "web:2"
+          ]
+        },
+        {
+          "id": "basic-17",
+          "category": "helpers",
+          "question": "What is ThingWorx Kepware Edge designed to do?",
+          "options": [
+            "Provide browser-based Mashup editing",
+            "Deploy industrial connectivity on edge systems to connect machines and sensors using protocols such as OPC UA and MQTT",
+            "Replace all on-premise PLCs",
+            "Manage user authentication"
+          ],
+          "answerIndex": 1,
+          "answerText": "Deploy industrial connectivity on edge systems to connect machines and sensors using protocols such as OPC UA and MQTT",
+          "explanation": "Kepware Edge extends industrial connectivity to edge environments and supports modern protocols for device integration.",
+          "sourceIds": [
+            "web:34",
+            "web:36"
+          ]
+        },
+        {
+          "id": "basic-18",
+          "category": "helpers",
+          "question": "Which protocols are commonly used by ThingWorx Kepware Edge to connect to applications or platforms?",
+          "options": [
+            "HTTP only",
+            "FTP and SFTP",
+            "OPC UA or MQTT",
+            "SNMP only"
+          ],
+          "answerIndex": 2,
+          "answerText": "OPC UA or MQTT",
+          "explanation": "Kepware and edge connectivity commonly use OPC UA and MQTT for industrial and IoT data exchange.",
+          "sourceIds": [
+            "web:34",
+            "web:36"
+          ]
+        },
+        {
+          "id": "basic-19",
+          "category": "helpers",
+          "question": "What are two common ways ThingWorx collects data in industrial solutions?",
+          "options": [
+            "Files and email",
+            "Integrations into enterprise systems and connectivity to machines or physical assets",
+            "SQL and NoSQL only",
+            "Only PLC drivers"
+          ],
+          "answerIndex": 1,
+          "answerText": "Integrations into enterprise systems and connectivity to machines or physical assets",
+          "explanation": "ThingWorx typically gathers data both from connected assets and from integrated enterprise systems.",
+          "sourceIds": [
+            "web:2",
+            "web:36"
+          ]
+        },
+        {
+          "id": "basic-20",
+          "category": "helpers",
+          "question": "What is the purpose of the ThingWorx AWS Connector?",
+          "options": [
+            "To replace ThingWorx storage with S3 buckets",
+            "To connect ThingWorx to AWS services so IoT data can be used with AWS compute and analytics",
+            "To synchronize user accounts with AWS IAM only",
+            "To compile Java services in AWS"
+          ],
+          "answerIndex": 1,
+          "answerText": "To connect ThingWorx to AWS services so IoT data can be used with AWS compute and analytics",
+          "explanation": "The AWS connector enables integration between ThingWorx and AWS services for broader cloud processing and analytics.",
+          "sourceIds": [
+            "web:32"
+          ]
+        }
+      ]
+    },
+    {
+      "level": "intermediate",
+      "questions": [
+        {
+          "id": "intermediate-1",
+          "category": "core",
+          "question": "What is the primary difference between a Thing Template and a Thing Shape?",
+          "options": [
+            "Templates are for UI; shapes are for data",
+            "A Thing Template is a base type for Things, while Thing Shapes are reusable behavior components that templates and Things can implement",
+            "Shapes are deprecated",
+            "Templates cannot hold services"
+          ],
+          "answerIndex": 1,
+          "answerText": "A Thing Template is a base type for Things, while Thing Shapes are reusable behavior components that templates and Things can implement",
+          "explanation": "Thing Templates act as base definitions, while Thing Shapes provide reusable capabilities that can be implemented across templates and Things.",
+          "sourceIds": [
+            "web:23",
+            "web:26"
+          ]
+        },
+        {
+          "id": "intermediate-2",
+          "category": "core",
+          "question": "Which storage mechanism is generally best for non-Thing-driven activity logs that mix various event types and user-defined fields?",
+          "options": [
+            "Value Stream",
+            "Stream",
+            "Data Table",
+            "Mashup"
+          ],
+          "answerIndex": 1,
+          "answerText": "Stream",
+          "explanation": "Streams are suited for general activity logging with flexible event structures.",
+          "sourceIds": [
+            "web:19"
+          ]
+        },
+        {
+          "id": "intermediate-3",
+          "category": "core",
+          "question": "Which storage is best for static reference data that requires primary keys and efficient querying?",
+          "options": [
+            "Stream",
+            "Value Stream",
+            "Data Table",
+            "Mashup"
+          ],
+          "answerIndex": 2,
+          "answerText": "Data Table",
+          "explanation": "Data Tables are appropriate for structured, queryable reference data with keys.",
+          "sourceIds": [
+            "web:24"
+          ]
+        },
+        {
+          "id": "intermediate-4",
+          "category": "core",
+          "question": "What is an InfoTable in ThingWorx?",
+          "options": [
+            "An external SQL table",
+            "A binary blob",
+            "A standard representation of tabular data, similar to a SQL result set, often defined by a Data Shape",
+            "A Mashup layout file"
+          ],
+          "answerIndex": 2,
+          "answerText": "A standard representation of tabular data, similar to a SQL result set, often defined by a Data Shape",
+          "explanation": "InfoTables are the standard tabular data structure in ThingWorx and often rely on Data Shapes.",
+          "sourceIds": [
+            "web:24"
+          ]
+        },
+        {
+          "id": "intermediate-5",
+          "category": "core",
+          "question": "Which Mashup type is recommended for layouts that must adapt to different screen resolutions?",
+          "options": [
+            "Static, legacy Mashup",
+            "Responsive Mashup",
+            "Text-only Mashup",
+            "Binary Mashup"
+          ],
+          "answerIndex": 1,
+          "answerText": "Responsive Mashup",
+          "explanation": "Responsive Mashups are designed to adapt to different screen sizes and layouts.",
+          "sourceIds": [
+            "web:14"
+          ]
+        },
+        {
+          "id": "intermediate-6",
+          "category": "core",
+          "question": "How are Events typically used with Subscriptions in ThingWorx?",
+          "options": [
+            "Events store data; subscriptions query it",
+            "Events trigger subscriptions, which execute services or business logic",
+            "Subscriptions define UI layouts",
+            "They are unrelated"
+          ],
+          "answerIndex": 1,
+          "answerText": "Events trigger subscriptions, which execute services or business logic",
+          "explanation": "Subscriptions run logic in response to event occurrences.",
+          "sourceIds": [
+            "web:2"
+          ]
+        },
+        {
+          "id": "intermediate-7",
+          "category": "core",
+          "question": "Which best practice is recommended for where to define properties and services in a complex model?",
+          "options": [
+            "Define everything directly on Things",
+            "Define properties and services on Thing Shapes and use Thing Templates to assemble them",
+            "Avoid Thing Shapes entirely",
+            "Use only Data Tables"
+          ],
+          "answerIndex": 1,
+          "answerText": "Define properties and services on Thing Shapes and use Thing Templates to assemble them",
+          "explanation": "PTC best practices recommend placing reusable logic in Thing Shapes for maintainability.",
+          "sourceIds": [
+            "web:26"
+          ]
+        },
+        {
+          "id": "intermediate-8",
+          "category": "core",
+          "question": "Once created, what is a key limitation of a Thing's base Thing Template?",
+          "options": [
+            "It can be changed only once",
+            "It cannot be changed at all after creation",
+            "It must be changed monthly",
+            "It changes automatically with Thing Shapes"
+          ],
+          "answerIndex": 1,
+          "answerText": "It cannot be changed at all after creation",
+          "explanation": "The base Thing Template is fixed after creation, which affects long-term modeling decisions.",
+          "sourceIds": [
+            "web:26"
+          ]
+        },
+        {
+          "id": "intermediate-9",
+          "category": "core",
+          "question": "Why are Value Streams particularly helpful for multi-tenant, Thing-centric solutions?",
+          "options": [
+            "They cannot be queried per Thing",
+            "They store all tenants in one row",
+            "They provide Thing-centric access to property data and help avoid sparsely populated tables",
+            "They are only for system logs"
+          ],
+          "answerIndex": 2,
+          "answerText": "They provide Thing-centric access to property data and help avoid sparsely populated tables",
+          "explanation": "Value Streams are optimized for per-Thing property history and can be more efficient than broad row-based logging.",
+          "sourceIds": [
+            "web:19"
+          ]
+        },
+        {
+          "id": "intermediate-10",
+          "category": "core",
+          "question": "How does ThingWorx use digital twins conceptually?",
+          "options": [
+            "To store only configuration files",
+            "To mirror real-time state and behavior of physical assets as digital models",
+            "Only for AR experiences",
+            "Only for user management"
+          ],
+          "answerIndex": 1,
+          "answerText": "To mirror real-time state and behavior of physical assets as digital models",
+          "explanation": "ThingWorx models assets as digital twins to track data, state, and behavior in real time.",
+          "sourceIds": [
+            "web:2"
+          ]
+        },
+        {
+          "id": "intermediate-11",
+          "category": "scenario",
+          "question": "You have multiple equipment types that share some ERP asset properties but also have type-specific behaviors. What is a good modeling strategy?",
+          "options": [
+            "One monolithic Thing for all equipment",
+            "Separate Things with no inheritance",
+            "Create Thing Shapes for shared and specific behaviors, then define Thing Templates per equipment type",
+            "Use only Data Tables"
+          ],
+          "answerIndex": 2,
+          "answerText": "Create Thing Shapes for shared and specific behaviors, then define Thing Templates per equipment type",
+          "explanation": "This approach supports reuse for shared behavior while preserving specialized behavior per equipment type.",
+          "sourceIds": [
+            "web:23",
+            "web:35"
+          ]
+        },
+        {
+          "id": "intermediate-12",
+          "category": "scenario",
+          "question": "You need to log infrequent diagnostic events that can come from many different Things and have varying custom fields. What store should you choose?",
+          "options": [
+            "Value Stream",
+            "Data Table",
+            "Stream",
+            "Mashup widget"
+          ],
+          "answerIndex": 2,
+          "answerText": "Stream",
+          "explanation": "Streams are better for flexible, event-style logging across many Things.",
+          "sourceIds": [
+            "web:19"
+          ]
+        },
+        {
+          "id": "intermediate-13",
+          "category": "scenario",
+          "question": "A customer wants a historical chart for a particular property per tenant, but does not want custom logging scripts per Thing. What do you recommend?",
+          "options": [
+            "Use Streams only",
+            "Use Value Streams associated with each Thing",
+            "Store everything in a Mashup",
+            "Avoid history"
+          ],
+          "answerIndex": 1,
+          "answerText": "Use Value Streams associated with each Thing",
+          "explanation": "Value Streams automatically support Thing property history without requiring custom event logging scripts.",
+          "sourceIds": [
+            "web:19"
+          ]
+        },
+        {
+          "id": "intermediate-14",
+          "category": "scenario",
+          "question": "You are designing a UI that shows a tree of Air Handlers on the left and a reusable detailed view on the right. What pattern fits best?",
+          "options": [
+            "Separate Mashup per Air Handler",
+            "Hard-coded HTML page",
+            "Thing Shape Mashup embedded in a main Mashup",
+            "No Mashup reuse"
+          ],
+          "answerIndex": 2,
+          "answerText": "Thing Shape Mashup embedded in a main Mashup",
+          "explanation": "Thing Shape Mashups support reusable object-oriented UI patterns.",
+          "sourceIds": [
+            "web:14"
+          ]
+        },
+        {
+          "id": "intermediate-15",
+          "category": "scenario",
+          "question": "You need to send an email when a maintenance-related event fires on a Thing. What combination is appropriate?",
+          "options": [
+            "Stream plus Data Table",
+            "Event and Subscription using a mail-related service or Thing",
+            "Mashup widget only",
+            "Value Stream only"
+          ],
+          "answerIndex": 1,
+          "answerText": "Event and Subscription using a mail-related service or Thing",
+          "explanation": "An event can trigger a subscription that then calls an email or notification service.",
+          "sourceIds": [
+            "web:2"
+          ]
+        },
+        {
+          "id": "intermediate-16",
+          "category": "scenario",
+          "question": "After switching the persistence provider of a Value Stream from the default provider to another one, new entries are written but not being retrieved. What should you do?",
+          "options": [
+            "Delete and recreate all Things",
+            "Restart the whole server OS",
+            "Restart the affected Things so they reconnect to the new Value Stream provider",
+            "Disable the Value Stream"
+          ],
+          "answerIndex": 2,
+          "answerText": "Restart the affected Things so they reconnect to the new Value Stream provider",
+          "explanation": "A restart is often needed so the Things begin reading from the new configured provider correctly.",
+          "sourceIds": [
+            "web:19"
+          ]
+        },
+        {
+          "id": "intermediate-17",
+          "category": "helpers",
+          "question": "What is a key benefit of using the ThingWorx AWS Connector instead of writing a custom integration to AWS?",
+          "options": [
+            "It removes the need for security",
+            "It is a special database engine",
+            "It is a supported extension that simplifies connecting to AWS and transferring IoT data for cloud processing",
+            "It only syncs user passwords"
+          ],
+          "answerIndex": 2,
+          "answerText": "It is a supported extension that simplifies connecting to AWS and transferring IoT data for cloud processing",
+          "explanation": "The AWS connector provides a supported path for sending ThingWorx data into AWS services.",
+          "sourceIds": [
+            "web:32"
+          ]
+        },
+        {
+          "id": "intermediate-18",
+          "category": "helpers",
+          "question": "In SAP OData integration with ThingWorx Flow, how is the SAP system typically connected?",
+          "options": [
+            "Through direct database access",
+            "Through SAP GUI scripting",
+            "Using an SAP OData connector with configured URL and credentials",
+            "Through CSV file imports"
+          ],
+          "answerIndex": 2,
+          "answerText": "Using an SAP OData connector with configured URL and credentials",
+          "explanation": "ThingWorx Flow commonly connects to SAP services through configured OData endpoints.",
+          "sourceIds": [
+            "web:32"
+          ]
+        },
+        {
+          "id": "intermediate-19",
+          "category": "helpers",
+          "question": "Which statement about ThingWorx Kepware Edge versus traditional centralized connectivity is accurate?",
+          "options": [
+            "Kepware Edge only runs on Windows desktop",
+            "Kepware Edge brings connectivity closer to Linux-based edge deployments near machines",
+            "Traditional connectivity cannot use MQTT",
+            "Kepware Edge has no protocol support"
+          ],
+          "answerIndex": 1,
+          "answerText": "Kepware Edge brings connectivity closer to Linux-based edge deployments near machines",
+          "explanation": "Kepware Edge is meant for edge-adjacent deployments rather than only centralized server-based connectivity.",
+          "sourceIds": [
+            "web:36"
+          ]
+        },
+        {
+          "id": "intermediate-20",
+          "category": "helpers",
+          "question": "What role does connectivity to edge tools like Kepware play in an industrial ThingWorx solution?",
+          "options": [
+            "Only configuration backup",
+            "Near real-time data collection from machines and devices",
+            "Only user authentication",
+            "Static file transfer"
+          ],
+          "answerIndex": 1,
+          "answerText": "Near real-time data collection from machines and devices",
+          "explanation": "Edge connectivity provides real-time or near real-time operational data into ThingWorx solutions.",
+          "sourceIds": [
+            "web:2",
+            "web:36"
+          ]
+        }
+      ]
+    },
+    {
+      "level": "advanced",
+      "questions": [
+        {
+          "id": "advanced-1",
+          "category": "core",
+          "question": "According to PTC best practices, where should you primarily define properties and services for reusability?",
+          "options": [
+            "Directly on Things",
+            "On Data Tables only",
+            "On Thing Shapes, which Thing Templates and Things implement",
+            "On Mashups"
+          ],
+          "answerIndex": 2,
+          "answerText": "On Thing Shapes, which Thing Templates and Things implement",
+          "explanation": "PTC best practices recommend defining reusable properties and services in Thing Shapes.",
+          "sourceIds": [
+            "web:26"
+          ]
+        },
+        {
+          "id": "advanced-2",
+          "category": "core",
+          "question": "What is the main rationale for Thing Shapes and Thing Templates in the ThingWorx inheritance model?",
+          "options": [
+            "To deprecate Streams",
+            "To support a simple and maintainable object-oriented inheritance model with reusable components",
+            "To replace all Mashups",
+            "To manage user logins"
+          ],
+          "answerIndex": 1,
+          "answerText": "To support a simple and maintainable object-oriented inheritance model with reusable components",
+          "explanation": "Thing Shapes and Thing Templates exist to make model inheritance easier to maintain and reuse.",
+          "sourceIds": [
+            "web:23"
+          ]
+        },
+        {
+          "id": "advanced-3",
+          "category": "core",
+          "question": "In PTC examples, what is a key modeling takeaway from reusable vehicle or truck models?",
+          "options": [
+            "Every vehicle must be a separate Thing with no inheritance",
+            "A specialized Thing Template can implement multiple Thing Shapes to combine shared and specific capabilities",
+            "Thing Shapes cannot be shared",
+            "Templates cannot inherit behaviors"
+          ],
+          "answerIndex": 1,
+          "answerText": "A specialized Thing Template can implement multiple Thing Shapes to combine shared and specific capabilities",
+          "explanation": "PTC examples show composing reusable behavior through multiple Thing Shapes implemented by a specific Thing Template.",
+          "sourceIds": [
+            "web:35"
+          ]
+        },
+        {
+          "id": "advanced-4",
+          "category": "core",
+          "question": "Which statement correctly describes a Data Shape at an advanced architectural level?",
+          "options": [
+            "It is only a transient UI object",
+            "It is a persistent definition describing tabular data formats used by InfoTables and related structures",
+            "It cannot be modified once created",
+            "It is used only for Mashups"
+          ],
+          "answerIndex": 1,
+          "answerText": "It is a persistent definition describing tabular data formats used by InfoTables and related structures",
+          "explanation": "A Data Shape is a persistent schema definition for tabular data structures in the platform.",
+          "sourceIds": [
+            "web:24"
+          ]
+        },
+        {
+          "id": "advanced-5",
+          "category": "core",
+          "question": "Which statement about Streams and Value Streams is most accurate for architecture decisions?",
+          "options": [
+            "Streams are synchronous, Value Streams asynchronous",
+            "Value Streams suit Thing-driven property history, while Streams suit broader activity logging",
+            "Both require exactly the same modeling approach",
+            "Streams store only configuration"
+          ],
+          "answerIndex": 1,
+          "answerText": "Value Streams suit Thing-driven property history, while Streams suit broader activity logging",
+          "explanation": "The two storage types serve different modeling goals: property history versus general event or activity logging.",
+          "sourceIds": [
+            "web:19"
+          ]
+        },
+        {
+          "id": "advanced-6",
+          "category": "core",
+          "question": "How does a Value Stream help avoid sparsely populated logging structures compared with generic event logging?",
+          "options": [
+            "It stores multiple Things in a single wide row",
+            "It stores data by Thing property rather than broad mixed rows",
+            "It compresses everything into blobs",
+            "It deletes unused fields automatically"
+          ],
+          "answerIndex": 1,
+          "answerText": "It stores data by Thing property rather than broad mixed rows",
+          "explanation": "Value Streams store property-centric history, reducing the need for wide event rows with many unused fields.",
+          "sourceIds": [
+            "web:19"
+          ]
+        },
+        {
+          "id": "advanced-7",
+          "category": "core",
+          "question": "Which base type is used to represent tabular service results in ThingWorx?",
+          "options": [
+            "TEXT",
+            "INFOTABLE",
+            "BLOB",
+            "JSON only"
+          ],
+          "answerIndex": 1,
+          "answerText": "INFOTABLE",
+          "explanation": "INFOTABLE is the standard base type for tabular data exchange in ThingWorx.",
+          "sourceIds": [
+            "web:24"
+          ]
+        },
+        {
+          "id": "advanced-8",
+          "category": "core",
+          "question": "What is a practical implication of the rule that you cannot change a Thing's base Thing Template after creation?",
+          "options": [
+            "You can always rebase it with a script",
+            "A poor base template choice can force later refactoring or recreation",
+            "It has no real impact",
+            "You can change it through a Mashup"
+          ],
+          "answerIndex": 1,
+          "answerText": "A poor base template choice can force later refactoring or recreation",
+          "explanation": "Because the base template is fixed, early modeling decisions can have long-term structural consequences.",
+          "sourceIds": [
+            "web:26"
+          ]
+        },
+        {
+          "id": "advanced-9",
+          "category": "core",
+          "question": "Why is model composition using Thing Shapes often preferred in large solutions?",
+          "options": [
+            "Because Shapes are only for UI",
+            "Because Shapes isolate reusable behavior and simplify maintenance across many Things",
+            "Because Thing Templates are not reusable",
+            "Because Data Tables replace inheritance"
+          ],
+          "answerIndex": 1,
+          "answerText": "Because Shapes isolate reusable behavior and simplify maintenance across many Things",
+          "explanation": "Thing Shapes help large solutions by centralizing reusable capabilities in a maintainable way.",
+          "sourceIds": [
+            "web:23",
+            "web:26"
+          ]
+        },
+        {
+          "id": "advanced-10",
+          "category": "core",
+          "question": "Which description best matches ThingWorx's digital twin approach in advanced industrial applications?",
+          "options": [
+            "A static metadata catalog only",
+            "A real-time digital representation of physical operations that supports monitoring and optimization",
+            "A user access control model",
+            "A file synchronization feature"
+          ],
+          "answerIndex": 1,
+          "answerText": "A real-time digital representation of physical operations that supports monitoring and optimization",
+          "explanation": "ThingWorx uses digital twins to reflect operational state and enable data-driven decisions.",
+          "sourceIds": [
+            "web:2"
+          ]
+        },
+        {
+          "id": "advanced-11",
+          "category": "scenario",
+          "question": "You are modeling a fleet where refrigerated assets need common vehicle behavior plus cooling-specific behavior. Which design aligns with PTC examples?",
+          "options": [
+            "Single Vehicle Thing with dynamic fields only",
+            "Common and refrigeration-specific Thing Shapes implemented by a specialized Thing Template",
+            "One Data Table for all behavior",
+            "A Mashup-only model"
+          ],
+          "answerIndex": 1,
+          "answerText": "Common and refrigeration-specific Thing Shapes implemented by a specialized Thing Template",
+          "explanation": "PTC examples show combining reusable general and specialized shapes through a dedicated Thing Template.",
+          "sourceIds": [
+            "web:35"
+          ]
+        },
+        {
+          "id": "advanced-12",
+          "category": "scenario",
+          "question": "You are migrating to a multi-tenant architecture where each tenant's assets must have isolated property histories. Which approach is most appropriate?",
+          "options": [
+            "Single Stream for all tenants only",
+            "Value Streams tied to tenant assets for Thing-centric property history",
+            "One Mashup per tenant",
+            "Only client-side storage"
+          ],
+          "answerIndex": 1,
+          "answerText": "Value Streams tied to tenant assets for Thing-centric property history",
+          "explanation": "Value Streams fit multi-tenant property history scenarios because they center history around the Thing and its properties.",
+          "sourceIds": [
+            "web:19"
+          ]
+        },
+        {
+          "id": "advanced-13",
+          "category": "scenario",
+          "question": "You have thousands of distributed Linux gateways near machines and need secure protocol translation to the cloud. Which technology best fits?",
+          "options": [
+            "Browser Mashups on each machine",
+            "ThingWorx Kepware Edge at the site using industrial protocols such as OPC UA or MQTT",
+            "Only direct JDBC connections",
+            "Manual CSV uploads"
+          ],
+          "answerIndex": 1,
+          "answerText": "ThingWorx Kepware Edge at the site using industrial protocols such as OPC UA or MQTT",
+          "explanation": "Kepware Edge is intended for edge-near industrial connectivity in distributed environments.",
+          "sourceIds": [
+            "web:34",
+            "web:36"
+          ]
+        },
+        {
+          "id": "advanced-14",
+          "category": "scenario",
+          "question": "You need a Mashup where a user selects a customer and then views customer-related SAP information through services. Which integration path best fits?",
+          "options": [
+            "Direct JDBC to SAP tables",
+            "CSV import only",
+            "Use an SAP OData-based integration layer such as ThingWorx Flow to expose SAP data into the app",
+            "Use only custom Java extensions"
+          ],
+          "answerIndex": 2,
+          "answerText": "Use an SAP OData-based integration layer such as ThingWorx Flow to expose SAP data into the app",
+          "explanation": "OData-based integration is the standard way to pull SAP business data into a ThingWorx-driven user experience.",
+          "sourceIds": [
+            "web:32"
+          ]
+        },
+        {
+          "id": "advanced-15",
+          "category": "scenario",
+          "question": "A manufacturer wants to use ThingWorx for modeling and UI but offload heavy analytics to AWS. Which pattern is recommended?",
+          "options": [
+            "Store everything only in local Data Tables",
+            "Use the ThingWorx AWS Connector to send data to AWS for cloud analytics while ThingWorx remains the application layer",
+            "Replace ThingWorx entirely",
+            "Use FTP file drops"
+          ],
+          "answerIndex": 1,
+          "answerText": "Use the ThingWorx AWS Connector to send data to AWS for cloud analytics while ThingWorx remains the application layer",
+          "explanation": "This lets ThingWorx remain the modeling and app tier while AWS handles advanced cloud-scale processing.",
+          "sourceIds": [
+            "web:32"
+          ]
+        },
+        {
+          "id": "advanced-16",
+          "category": "scenario",
+          "question": "You need to build a complex dashboard where reusable component views, such as a Pump Detail Panel, appear across many screens. What is a scalable UI approach?",
+          "options": [
+            "Copy and paste widgets into every Mashup",
+            "Create reusable Thing Shape Mashups and embed them inside parent Mashups",
+            "Use only one giant Mashup",
+            "Avoid Mashup reuse entirely"
+          ],
+          "answerIndex": 1,
+          "answerText": "Create reusable Thing Shape Mashups and embed them inside parent Mashups",
+          "explanation": "Reusable embedded Mashups help scale UI development while reducing duplication and maintenance.",
+          "sourceIds": [
+            "web:14"
+          ]
+        },
+        {
+          "id": "advanced-17",
+          "category": "helpers",
+          "question": "Which advanced capability supports large-scale edge deployments with ThingWorx connectivity tooling?",
+          "options": [
+            "Mainframe-only support",
+            "Linux-friendly edge deployment with broad protocol connectivity and scalable field usage",
+            "Only one instance per site",
+            "No support for IoT protocols"
+          ],
+          "answerIndex": 1,
+          "answerText": "Linux-friendly edge deployment with broad protocol connectivity and scalable field usage",
+          "explanation": "ThingWorx edge connectivity is aimed at scalable industrial deployments close to machines and sensors.",
+          "sourceIds": [
+            "web:34",
+            "web:36"
+          ]
+        },
+        {
+          "id": "advanced-18",
+          "category": "helpers",
+          "question": "What strategic benefit does the ThingWorx AWS Connector provide for predictive maintenance and Industry 4.0 use cases?",
+          "options": [
+            "It replaces all PLC logic with cloud code",
+            "It lets ThingWorx asset data flow to AWS for broader analytics and predictive workloads",
+            "It disables local analytics",
+            "It only sends log files"
+          ],
+          "answerIndex": 1,
+          "answerText": "It lets ThingWorx asset data flow to AWS for broader analytics and predictive workloads",
+          "explanation": "By moving operational data into AWS services, teams can apply cloud analytics and predictive models more easily.",
+          "sourceIds": [
+            "web:32"
+          ]
+        },
+        {
+          "id": "advanced-19",
+          "category": "helpers",
+          "question": "How do edge connectivity tools such as Kepware contribute to industrial ThingWorx architectures?",
+          "options": [
+            "They are only used for user management",
+            "They bridge machine protocols and enterprise applications through a unified connectivity layer",
+            "They replace Mashups",
+            "They only work with flat files"
+          ],
+          "answerIndex": 1,
+          "answerText": "They bridge machine protocols and enterprise applications through a unified connectivity layer",
+          "explanation": "Connectivity tooling reduces the need for many custom point integrations by exposing machine data through common interfaces.",
+          "sourceIds": [
+            "web:34",
+            "web:36"
+          ]
+        },
+        {
+          "id": "advanced-20",
+          "category": "helpers",
+          "question": "Why are extensions, connectors, and plugins important in a ThingWorx solution landscape?",
+          "options": [
+            "They are optional decorations with no real value",
+            "They expand the platform's connectivity and integration reach beyond core modeling and visualization",
+            "They only change CSS in Mashups",
+            "They replace the Thing model"
+          ],
+          "answerIndex": 1,
+          "answerText": "They expand the platform's connectivity and integration reach beyond core modeling and visualization",
+          "explanation": "Connectors and extensions help ThingWorx work with external systems, cloud services, and industrial protocols.",
+          "sourceIds": [
+            "web:32",
+            "web:34",
+            "web:36"
+          ]
+        }
+      ]
+    }
+  ]
+}
