@@ -135,7 +135,14 @@
           </article>
 
           <section id="code-snippet-box" class="code-snippet hidden" aria-label="Code snippet">
-            <pre id="code-snippet-text"></pre>
+            <div class="code-snippet-head">
+              <span class="code-snippet-title">Code Snippet</span>
+              <button id="copy-code-btn" class="code-copy-btn" type="button">Copy</button>
+            </div>
+            <div class="code-snippet-body">
+              <pre id="code-snippet-line-numbers" class="code-lines" aria-hidden="true"></pre>
+              <pre id="code-snippet-text" class="code-content"></pre>
+            </div>
           </section>
 
           <div id="options-container" class="options-grid" role="group" aria-label="Answer options"></div>
@@ -165,10 +172,19 @@
               <p id="result-score" class="result-value">0 / 60</p>
             </div>
             <div class="result-card">
+              <p class="result-label">Total Wrong</p>
+              <p id="result-wrong-count" class="result-value">0</p>
+            </div>
+            <div class="result-card">
               <p class="result-label">Percentage</p>
               <p id="result-percentage" class="result-value">0%</p>
             </div>
           </div>
+
+          <section class="result-breakdown">
+            <h3>Category Breakdown</h3>
+            <div id="result-category-breakdown" class="breakdown-list"></div>
+          </section>
 
           <p id="result-status" class="result-status">FAIL</p>
           <button id="restart-btn" class="btn btn-primary" type="button">Restart Quiz</button>
