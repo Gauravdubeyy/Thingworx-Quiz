@@ -1,5 +1,7 @@
 "use strict";
 
+const STORAGE_KEY = "thingworxQuizState_v1";
+
 const quizState = {
   username: "",
   currentLevelIndex: 0,
@@ -7,8 +9,6 @@ const quizState = {
   answers: [],
   score: 0
 };
-
-const STORAGE_KEY = "thingworxQuizState_v1";
 
 let quizData = null;
 let refs = {};
@@ -18,12 +18,12 @@ let transitionTimeoutId = null;
 let autoAdvanceTimeoutId = null;
 let isAutoAdvancing = false;
 
+// ---------- App Bootstrap ----------
 document.addEventListener("DOMContentLoaded", async () => {
   cacheElements();
   bindEvents();
   await loadQuiz();
-  hydrateUsernameFromStorage();
-  showScreen("start-screen");
+  initializeFromSavedAttempt();
 });
 
 function cacheElements() {
@@ -31,22 +31,18 @@ function cacheElements() {
     appTitle: document.getElementById("app-title"),
     appDescription: document.getElementById("app-description"),
 
-    startScreen: document.getElementById("start-screen"),
     usernameInput: document.getElementById("username-input"),
     startBtn: document.getElementById("start-btn"),
     startError: document.getElementById("start-error"),
 
-    introScreen: document.getElementById("intro-screen"),
     introLevelCount: document.getElementById("intro-level-count"),
     introQuestionCount: document.getElementById("intro-question-count"),
     introLevelTrack: document.getElementById("intro-level-track"),
     introProgressFill: document.getElementById("intro-progress-fill"),
 
-    transitionScreen: document.getElementById("transition-screen"),
     transitionTitle: document.getElementById("transition-title"),
     transitionText: document.getElementById("transition-text"),
 
-    quizScreen: document.getElementById("quiz-screen"),
     usernameChip: document.getElementById("username-chip"),
     levelChip: document.getElementById("level-chip"),
 
@@ -54,23 +50,24 @@ function cacheElements() {
     questionProgressPercent: document.getElementById("question-progress-percent"),
     questionProgressFill: document.getElementById("question-progress-fill"),
 
-    levelProgressLabel: document.getElementById("level-progress-label"),
-    levelProgressPercent: document.getElementById("level-progress-percent"),
-    levelProgressFill: document.getElementById("level-progress-fill"),
+    overallProgressLabel: document.getElementById("overall-progress-label"),
+    overallProgressPercent: document.getElementById("overall-progress-percent"),
+    overallProgressFill: document.getElementById("overall-progress-fill"),
 
     questionCounter: document.getElementById("question-counter"),
     questionCategory: document.getElementById("question-category"),
     questionText: document.getElementById("question-text"),
+    questionCard: document.querySelector(".question-card"),
     optionsContainer: document.getElementById("options-container"),
 
     explanationBox: document.getElementById("explanation-box"),
+    answerFeedback: document.getElementById("answer-feedback"),
     explanationText: document.getElementById("explanation-text"),
     correctAnswerText: document.getElementById("correct-answer-text"),
 
     backBtn: document.getElementById("back-btn"),
     nextBtn: document.getElementById("next-btn"),
 
-    resultScreen: document.getElementById("result-screen"),
     resultUsername: document.getElementById("result-username"),
     resultScore: document.getElementById("result-score"),
     resultPercentage: document.getElementById("result-percentage"),
@@ -90,8 +87,10 @@ function bindEvents() {
   refs.backBtn.addEventListener("click", () => navigate(-1));
   refs.nextBtn.addEventListener("click", () => navigate(1));
   refs.restartBtn.addEventListener("click", restartQuiz);
+  refs.optionsContainer.addEventListener("keydown", handleOptionKeydown);
 }
 
+// ---------- Data Loading ----------
 async function loadQuiz() {
   try {
     const response = await fetch("thingworx-quiz-webapp.json", { cache: "no-store" });
@@ -137,6 +136,149 @@ function buildIntroTrack() {
   refs.introProgressFill.style.width = "0%";
 }
 
+// ---------- Persistence / Resume ----------
+function initializeFromSavedAttempt() {
+  if (!quizData) {
+    showScreen("start-screen");
+    return;
+  }
+
+  const savedState = getSavedState();
+
+  if (!savedState) {
+    showScreen("start-screen");
+    return;
+  }
+
+  const shouldResume = window.confirm("Resume previous attempt?");
+
+  if (!shouldResume) {
+    clearSavedState();
+    refs.usernameInput.value = "";
+    showScreen("start-screen");
+    return;
+  }
+
+  const restored = restoreState(savedState);
+
+  if (!restored) {
+    clearSavedState();
+    showScreen("start-screen");
+    return;
+  }
+
+  refs.usernameInput.value = quizState.username;
+  showScreen("quiz-screen");
+  renderQuestion();
+}
+
+function getSavedState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) {
+      return null;
+    }
+
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : null;
+  } catch (error) {
+    console.warn("Could not read previous state.", error);
+    return null;
+  }
+}
+
+function restoreState(savedState) {
+  const normalized = normalizeSavedState(savedState);
+  if (!normalized) {
+    return false;
+  }
+
+  quizState.username = normalized.username;
+  quizState.currentLevelIndex = normalized.currentLevelIndex;
+  quizState.currentQuestionIndex = normalized.currentQuestionIndex;
+  quizState.answers = normalized.answers;
+
+  calculateScore();
+  persistState();
+  return true;
+}
+
+function normalizeSavedState(savedState) {
+  const levels = quizData?.levels;
+  if (!Array.isArray(levels) || levels.length === 0) {
+    return null;
+  }
+
+  if (typeof savedState.username !== "string" || !savedState.username.trim()) {
+    return null;
+  }
+
+  if (!Array.isArray(savedState.answers) || savedState.answers.length !== levels.length) {
+    return null;
+  }
+
+  const answers = [];
+
+  for (let levelIndex = 0; levelIndex < levels.length; levelIndex += 1) {
+    const questionList = levels[levelIndex].questions;
+    const savedLevelAnswers = savedState.answers[levelIndex];
+
+    if (!Array.isArray(savedLevelAnswers) || savedLevelAnswers.length !== questionList.length) {
+      return null;
+    }
+
+    const normalizedLevel = savedLevelAnswers.map((value) => {
+      if (value === null) {
+        return null;
+      }
+
+      if (Number.isInteger(value) && value >= 0 && value <= 3) {
+        return value;
+      }
+
+      return null;
+    });
+
+    answers.push(normalizedLevel);
+  }
+
+  const safeLevelIndex = clampNumber(savedState.currentLevelIndex, 0, levels.length - 1);
+  const maxQuestionIndex = levels[safeLevelIndex].questions.length - 1;
+  const safeQuestionIndex = clampNumber(savedState.currentQuestionIndex, 0, maxQuestionIndex);
+
+  return {
+    username: savedState.username.trim(),
+    currentLevelIndex: safeLevelIndex,
+    currentQuestionIndex: safeQuestionIndex,
+    answers
+  };
+}
+
+function persistState() {
+  try {
+    const payload = {
+      username: quizState.username,
+      currentLevelIndex: quizState.currentLevelIndex,
+      currentQuestionIndex: quizState.currentQuestionIndex,
+      answers: quizState.answers,
+      score: quizState.score
+    };
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+  } catch (error) {
+    console.warn("State persistence skipped.", error);
+  }
+}
+
+function clearSavedState() {
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch (error) {
+    console.warn("Could not clear previous state.", error);
+  }
+}
+
+// ---------- Flow ----------
 function startQuizFlow() {
   if (!quizData) {
     refs.startError.textContent = "Quiz data is not ready yet.";
@@ -159,10 +301,10 @@ function initializeState(username) {
   quizState.currentLevelIndex = 0;
   quizState.currentQuestionIndex = 0;
   quizState.answers = quizData.levels.map((levelObj) => Array(levelObj.questions.length).fill(null));
-  quizState.score = 0;
-  isAutoAdvancing = false;
 
-  saveState();
+  calculateScore();
+  isAutoAdvancing = false;
+  persistState();
 }
 
 function playIntroAnimation() {
@@ -197,6 +339,30 @@ function playIntroAnimation() {
   }, 3000);
 }
 
+function showLevelTransition(nextLevelIndex) {
+  clearTimeout(autoAdvanceTimeoutId);
+  autoAdvanceTimeoutId = null;
+
+  const completedLevel = quizData.levels[nextLevelIndex - 1];
+  const upcomingLevel = quizData.levels[nextLevelIndex];
+
+  quizState.currentLevelIndex = nextLevelIndex;
+  quizState.currentQuestionIndex = 0;
+  persistState();
+
+  refs.transitionTitle.textContent = `${toDisplayLevel(completedLevel.level)} Complete`;
+  refs.transitionText.textContent = `Starting ${toDisplayLevel(upcomingLevel.level)} level...`;
+
+  showScreen("transition-screen");
+
+  clearTimeout(transitionTimeoutId);
+  transitionTimeoutId = window.setTimeout(() => {
+    showScreen("quiz-screen");
+    renderQuestion();
+  }, 1400);
+}
+
+// ---------- Rendering ----------
 function renderQuestion() {
   const levelObj = getCurrentLevel();
   const questionObj = getCurrentQuestion();
@@ -215,6 +381,7 @@ function renderQuestion() {
   refs.questionCategory.textContent = String(questionObj.category || "general").toUpperCase();
   refs.questionText.textContent = questionObj.question;
 
+  animateElement(refs.questionCard);
   renderOptions(questionObj, selectedIndex);
   renderExplanation(questionObj, selectedIndex);
   updateNavigation(selectedIndex, questionCount);
@@ -226,23 +393,30 @@ function renderOptions(questionObj, selectedIndex) {
 
   questionObj.options.forEach((optionText, optionIndex) => {
     const button = document.createElement("button");
+    const isAnswered = selectedIndex !== null;
+    const isSelected = optionIndex === selectedIndex;
+
     button.type = "button";
     button.className = "option-card";
     button.dataset.index = String(optionIndex);
+    button.setAttribute("role", "button");
+    button.setAttribute("aria-selected", String(isSelected));
+    button.setAttribute("aria-disabled", String(isAnswered));
+    button.setAttribute("aria-label", `Option ${String.fromCharCode(65 + optionIndex)}: ${optionText}`);
 
     const optionLetter = String.fromCharCode(65 + optionIndex);
-    button.innerHTML = `<span class="option-key">${optionLetter}</span><span>${optionText}</span>`;
-
-    const isAnswered = selectedIndex !== null;
+    button.innerHTML = `<span class="option-key">${optionLetter}</span><span class="option-text">${optionText}</span>`;
 
     if (!isAnswered) {
       button.addEventListener("click", () => handleAnswer(optionIndex));
+      button.tabIndex = optionIndex === 0 ? 0 : -1;
+    } else {
+      button.disabled = true;
+      button.tabIndex = -1;
     }
 
     if (isAnswered) {
-      button.disabled = true;
-
-      if (optionIndex === selectedIndex) {
+      if (isSelected) {
         button.classList.add("selected");
       }
 
@@ -250,122 +424,54 @@ function renderOptions(questionObj, selectedIndex) {
         button.classList.add("correct");
       }
 
-      if (optionIndex === selectedIndex && selectedIndex !== questionObj.answerIndex) {
+      if (isSelected && selectedIndex !== questionObj.answerIndex) {
         button.classList.add("wrong");
       }
     }
 
     refs.optionsContainer.appendChild(button);
   });
+
+  animateElement(refs.optionsContainer);
 }
 
 function renderExplanation(questionObj, selectedIndex) {
-  const showWrongExplanation = selectedIndex !== null && selectedIndex !== questionObj.answerIndex;
-
-  if (showWrongExplanation) {
-    refs.explanationText.textContent = questionObj.explanation;
-    refs.correctAnswerText.textContent = `Correct answer: ${questionObj.answerText}`;
-    refs.explanationBox.classList.remove("hidden");
+  if (selectedIndex === null) {
+    refs.explanationBox.classList.add("hidden");
+    refs.answerFeedback.textContent = "";
+    refs.explanationText.textContent = "";
+    refs.correctAnswerText.textContent = "";
     return;
   }
 
-  refs.explanationBox.classList.add("hidden");
-  refs.explanationText.textContent = "";
-  refs.correctAnswerText.textContent = "";
+  const isCorrect = selectedIndex === questionObj.answerIndex;
+
+  refs.answerFeedback.textContent = isCorrect ? "You selected the correct answer." : "Your selection is incorrect.";
+  refs.explanationText.textContent = questionObj.explanation;
+  refs.correctAnswerText.textContent = `Correct answer: ${questionObj.answerText}`;
+
+  refs.explanationBox.classList.remove("hidden");
+  animateElement(refs.explanationBox);
 }
 
-function handleAnswer(selectedIndex) {
-  if (isAutoAdvancing) {
-    return;
-  }
+function updateProgress(questionCount) {
+  const currentQuestionPosition = quizState.currentQuestionIndex + 1;
+  const questionProgress = (currentQuestionPosition / questionCount) * 100;
 
-  const levelIndex = quizState.currentLevelIndex;
-  const questionIndex = quizState.currentQuestionIndex;
-  const existing = quizState.answers[levelIndex][questionIndex];
+  refs.questionProgressLabel.textContent = `Question ${currentQuestionPosition} / ${questionCount}`;
+  refs.questionProgressPercent.textContent = `${Math.round(questionProgress)}%`;
+  refs.questionProgressFill.style.width = `${questionProgress}%`;
 
-  if (existing !== null) {
-    return;
-  }
+  const totalQuestions = getTotalQuestions();
+  const overallQuestionPosition = getOverallQuestionPosition(
+    quizState.currentLevelIndex,
+    currentQuestionPosition
+  );
+  const overallProgress = (overallQuestionPosition / totalQuestions) * 100;
 
-  quizState.answers[levelIndex][questionIndex] = selectedIndex;
-  saveState();
-
-  const levelObj = getCurrentLevel();
-  const isLastQuestionInLevel = questionIndex === levelObj.questions.length - 1;
-
-  if (isLastQuestionInLevel) {
-    isAutoAdvancing = true;
-  }
-
-  renderQuestion();
-
-  if (!isLastQuestionInLevel) {
-    return;
-  }
-
-  const isLastLevel = levelIndex === quizData.levels.length - 1;
-
-  clearTimeout(autoAdvanceTimeoutId);
-  autoAdvanceTimeoutId = window.setTimeout(() => {
-    isAutoAdvancing = false;
-
-    if (isLastLevel) {
-      calculateScore();
-      renderResult();
-      return;
-    }
-
-    showLevelTransition(levelIndex + 1);
-  }, 1000);
-}
-
-function navigate(direction) {
-  if (isAutoAdvancing || !quizData) {
-    return;
-  }
-
-  if (direction > 0) {
-    const selectedIndex = quizState.answers[quizState.currentLevelIndex][quizState.currentQuestionIndex];
-    if (selectedIndex === null) {
-      return;
-    }
-
-    const levelObj = getCurrentLevel();
-    const isLastQuestion = quizState.currentQuestionIndex === levelObj.questions.length - 1;
-    const isLastLevel = quizState.currentLevelIndex === quizData.levels.length - 1;
-
-    if (isLastQuestion) {
-      if (isLastLevel) {
-        calculateScore();
-        renderResult();
-      } else {
-        showLevelTransition(quizState.currentLevelIndex + 1);
-      }
-      return;
-    }
-
-    quizState.currentQuestionIndex += 1;
-    saveState();
-    renderQuestion();
-    return;
-  }
-
-  if (direction < 0) {
-    if (quizState.currentQuestionIndex > 0) {
-      quizState.currentQuestionIndex -= 1;
-      saveState();
-      renderQuestion();
-      return;
-    }
-
-    if (quizState.currentLevelIndex > 0) {
-      quizState.currentLevelIndex -= 1;
-      const previousLevel = getCurrentLevel();
-      quizState.currentQuestionIndex = previousLevel.questions.length - 1;
-      saveState();
-      renderQuestion();
-    }
-  }
+  refs.overallProgressLabel.textContent = `${overallQuestionPosition} / ${totalQuestions}`;
+  refs.overallProgressPercent.textContent = `${Math.round(overallProgress)}%`;
+  refs.overallProgressFill.style.width = `${overallProgress}%`;
 }
 
 function updateNavigation(selectedIndex, questionCount) {
@@ -385,46 +491,162 @@ function updateNavigation(selectedIndex, questionCount) {
   refs.nextBtn.disabled = selectedIndex === null;
 }
 
-function updateProgress(questionCount) {
-  const currentQuestionPosition = quizState.currentQuestionIndex + 1;
-  const questionProgress = (currentQuestionPosition / questionCount) * 100;
+// ---------- Input / Navigation ----------
+function handleAnswer(selectedIndex) {
+  if (isAutoAdvancing) {
+    return;
+  }
 
-  refs.questionProgressLabel.textContent = `Question ${currentQuestionPosition} / ${questionCount}`;
-  refs.questionProgressPercent.textContent = `${Math.round(questionProgress)}%`;
-  refs.questionProgressFill.style.width = `${questionProgress}%`;
+  const levelIndex = quizState.currentLevelIndex;
+  const questionIndex = quizState.currentQuestionIndex;
+  const existing = quizState.answers[levelIndex][questionIndex];
 
-  const levelPosition = quizState.currentLevelIndex + 1;
-  const totalLevels = quizData.levels.length;
-  const levelProgress = ((quizState.currentLevelIndex + currentQuestionPosition / questionCount) / totalLevels) * 100;
+  if (existing !== null) {
+    return;
+  }
 
-  refs.levelProgressLabel.textContent = `Level Progress ${levelPosition} / ${totalLevels}`;
-  refs.levelProgressPercent.textContent = `${Math.round(levelProgress)}%`;
-  refs.levelProgressFill.style.width = `${levelProgress}%`;
-}
+  quizState.answers[levelIndex][questionIndex] = selectedIndex;
+  calculateScore();
+  persistState();
 
-function showLevelTransition(nextLevelIndex) {
+  const levelObj = getCurrentLevel();
+  const isLastQuestionInLevel = questionIndex === levelObj.questions.length - 1;
+
+  if (isLastQuestionInLevel) {
+    isAutoAdvancing = true;
+  }
+
+  renderQuestion();
+  smoothScrollToExplanation();
+
+  if (!isLastQuestionInLevel) {
+    return;
+  }
+
+  const isLastLevel = levelIndex === quizData.levels.length - 1;
+
   clearTimeout(autoAdvanceTimeoutId);
-  autoAdvanceTimeoutId = null;
+  autoAdvanceTimeoutId = window.setTimeout(() => {
+    isAutoAdvancing = false;
 
-  const completedLevel = quizData.levels[nextLevelIndex - 1];
-  const upcomingLevel = quizData.levels[nextLevelIndex];
+    if (isLastLevel) {
+      calculateScore();
+      persistState();
+      renderResult();
+      return;
+    }
 
-  quizState.currentLevelIndex = nextLevelIndex;
-  quizState.currentQuestionIndex = 0;
-  saveState();
-
-  refs.transitionTitle.textContent = `${toDisplayLevel(completedLevel.level)} Complete`;
-  refs.transitionText.textContent = `Starting ${toDisplayLevel(upcomingLevel.level)} level...`;
-
-  showScreen("transition-screen");
-
-  clearTimeout(transitionTimeoutId);
-  transitionTimeoutId = window.setTimeout(() => {
-    showScreen("quiz-screen");
-    renderQuestion();
-  }, 1400);
+    showLevelTransition(levelIndex + 1);
+  }, 1000);
 }
 
+function navigate(direction) {
+  if (isAutoAdvancing || !quizData) {
+    return;
+  }
+
+  if (direction > 0) {
+    moveNext();
+    return;
+  }
+
+  if (direction < 0) {
+    moveBack();
+  }
+}
+
+function moveNext() {
+  const selectedIndex = quizState.answers[quizState.currentLevelIndex][quizState.currentQuestionIndex];
+  if (selectedIndex === null) {
+    return;
+  }
+
+  const levelObj = getCurrentLevel();
+  const isLastQuestion = quizState.currentQuestionIndex === levelObj.questions.length - 1;
+  const isLastLevel = quizState.currentLevelIndex === quizData.levels.length - 1;
+
+  if (isLastQuestion) {
+    if (isLastLevel) {
+      calculateScore();
+      persistState();
+      renderResult();
+    } else {
+      showLevelTransition(quizState.currentLevelIndex + 1);
+    }
+    return;
+  }
+
+  quizState.currentQuestionIndex += 1;
+  persistState();
+  renderQuestion();
+}
+
+function moveBack() {
+  if (quizState.currentQuestionIndex > 0) {
+    quizState.currentQuestionIndex -= 1;
+    persistState();
+    renderQuestion();
+    return;
+  }
+
+  if (quizState.currentLevelIndex > 0) {
+    quizState.currentLevelIndex -= 1;
+    const previousLevel = getCurrentLevel();
+    quizState.currentQuestionIndex = previousLevel.questions.length - 1;
+    persistState();
+    renderQuestion();
+  }
+}
+
+function handleOptionKeydown(event) {
+  const active = document.activeElement;
+  if (!active || !active.classList.contains("option-card")) {
+    return;
+  }
+
+  if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+    event.preventDefault();
+    moveOptionFocus(1);
+    return;
+  }
+
+  if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+    event.preventDefault();
+    moveOptionFocus(-1);
+    return;
+  }
+
+  if ((event.key === "Enter" || event.key === " ") && !active.disabled) {
+    event.preventDefault();
+    const selectedIndex = Number(active.dataset.index);
+    if (Number.isInteger(selectedIndex)) {
+      handleAnswer(selectedIndex);
+    }
+  }
+}
+
+function moveOptionFocus(step) {
+  const options = Array.from(refs.optionsContainer.querySelectorAll(".option-card:not([disabled])"));
+
+  if (options.length === 0) {
+    return;
+  }
+
+  let currentIndex = options.findIndex((option) => option === document.activeElement);
+  if (currentIndex < 0) {
+    currentIndex = 0;
+  }
+
+  const nextIndex = (currentIndex + step + options.length) % options.length;
+
+  options.forEach((option, index) => {
+    option.tabIndex = index === nextIndex ? 0 : -1;
+  });
+
+  options[nextIndex].focus();
+}
+
+// ---------- Scoring / Result ----------
 function calculateScore() {
   let correctCount = 0;
 
@@ -438,7 +660,6 @@ function calculateScore() {
   });
 
   quizState.score = correctCount;
-  saveState();
   return correctCount;
 }
 
@@ -478,6 +699,7 @@ function restartQuiz() {
   showScreen("start-screen");
 }
 
+// ---------- Utilities ----------
 function getCurrentLevel() {
   return quizData?.levels?.[quizState.currentLevelIndex] || null;
 }
@@ -491,6 +713,16 @@ function getTotalQuestions() {
   return quizData.levels.reduce((sum, levelObj) => sum + levelObj.questions.length, 0);
 }
 
+function getOverallQuestionPosition(levelIndex, questionPositionInLevel) {
+  let totalBeforeLevel = 0;
+
+  for (let index = 0; index < levelIndex; index += 1) {
+    totalBeforeLevel += quizData.levels[index].questions.length;
+  }
+
+  return totalBeforeLevel + questionPositionInLevel;
+}
+
 function toDisplayLevel(levelName) {
   const value = String(levelName || "").trim();
   if (!value) {
@@ -499,42 +731,21 @@ function toDisplayLevel(levelName) {
   return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
 }
 
+function clampNumber(value, min, max) {
+  const safeNumber = Number.isInteger(value) ? value : min;
+  if (safeNumber < min) {
+    return min;
+  }
+  if (safeNumber > max) {
+    return max;
+  }
+  return safeNumber;
+}
+
 function showScreen(screenId) {
   document.querySelectorAll(".screen").forEach((screen) => {
     screen.classList.toggle("active", screen.id === screenId);
   });
-}
-
-function saveState() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(quizState));
-  } catch (error) {
-    console.warn("State persistence skipped.", error);
-  }
-}
-
-function hydrateUsernameFromStorage() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      return;
-    }
-
-    const parsed = JSON.parse(raw);
-    if (parsed && typeof parsed.username === "string") {
-      refs.usernameInput.value = parsed.username;
-    }
-  } catch (error) {
-    console.warn("Could not read previous state.", error);
-  }
-}
-
-function clearSavedState() {
-  try {
-    localStorage.removeItem(STORAGE_KEY);
-  } catch (error) {
-    console.warn("Could not clear previous state.", error);
-  }
 }
 
 function clearTimers() {
@@ -547,4 +758,22 @@ function clearTimers() {
   introTimeoutId = null;
   transitionTimeoutId = null;
   autoAdvanceTimeoutId = null;
+}
+
+function animateElement(element) {
+  if (!element) {
+    return;
+  }
+
+  element.classList.remove("animate-in");
+  void element.offsetWidth;
+  element.classList.add("animate-in");
+}
+
+function smoothScrollToExplanation() {
+  if (!refs.explanationBox || refs.explanationBox.classList.contains("hidden")) {
+    return;
+  }
+
+  refs.explanationBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
