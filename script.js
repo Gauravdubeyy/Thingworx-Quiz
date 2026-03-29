@@ -1496,3 +1496,375 @@ function restoreState(savedState) {
   persistState();
   return true;
 }
+function normalizeSavedState(savedState) {
+  const levels = quizData?.levels;
+  if (!Array.isArray(levels) || levels.length === 0) {
+    return null;
+  }
+
+  if (typeof savedState.username !== "string" || !savedState.username.trim()) {
+    return null;
+  }
+
+  if (!Array.isArray(savedState.answers) || savedState.answers.length !== levels.length) {
+    return null;
+  }
+
+  const answers = [];
+
+  for (let levelIndex = 0; levelIndex < levels.length; levelIndex += 1) {
+    const questionList = levels[levelIndex]?.questions;
+    const savedLevelAnswers = savedState.answers[levelIndex];
+
+    if (!Array.isArray(questionList) || !Array.isArray(savedLevelAnswers) || savedLevelAnswers.length !== questionList.length) {
+      return null;
+    }
+
+    answers.push(
+      savedLevelAnswers.map((value) =>
+        value === null || (Number.isInteger(value) && value >= 0 && value <= 3) ? value : null
+      )
+    );
+  }
+
+  const safeLevelIndex = clampNumber(savedState.currentLevelIndex, 0, levels.length - 1);
+  const maxQuestionIndex = Math.max(0, levels[safeLevelIndex].questions.length - 1);
+
+  return {
+    username: savedState.username.trim(),
+    currentLevelIndex: safeLevelIndex,
+    currentQuestionIndex: clampNumber(savedState.currentQuestionIndex, 0, maxQuestionIndex),
+    answers
+  };
+}
+
+function isSavedStateVersionCompatible(savedState) {
+  if (!savedState || typeof savedState !== "object") {
+    return false;
+  }
+
+  if (savedState.selectedQuizType !== currentQuizType) {
+    return false;
+  }
+
+  const savedVersion = String(savedState.datasetVersion || "");
+  const currentVersion = String(currentDatasetVersion || "");
+
+  return Boolean(savedVersion) && Boolean(currentVersion) && savedVersion === currentVersion;
+}
+
+function clearSavedState() {
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch (error) {
+    console.warn("Could not clear previous state.", error);
+  }
+}
+
+function clearAllLocalStorage() {
+  try {
+    localStorage.clear();
+  } catch (error) {
+    console.warn("Could not clear localStorage.", error);
+  }
+}
+
+function showFatalError(message) {
+  hasFatalError = true;
+  clearTimers();
+  isTransitioning = false;
+
+  if (refs.fatalErrorMessage) {
+    refs.fatalErrorMessage.textContent = message || "Unable to initialize quiz.";
+  }
+
+  showScreen("error-screen");
+}
+
+function applyAppMetadata(metadata) {
+  if (!refs.appTitle || !refs.appDescription) {
+    return;
+  }
+
+  refs.appTitle.textContent = metadata?.title || DEFAULT_APP_TITLE;
+  refs.appDescription.textContent = metadata?.description || DEFAULT_APP_DESCRIPTION;
+}
+
+function getQuestionsPerLevelLabel(levels) {
+  if (!Array.isArray(levels) || levels.length === 0) {
+    return "Questions";
+  }
+
+  const counts = levels.map((levelObj) => (Array.isArray(levelObj.questions) ? levelObj.questions.length : 0));
+  const allSame = counts.every((count) => count === counts[0]);
+
+  if (allSame) {
+    return `${counts[0]} Questions Each`;
+  }
+
+  return levels
+    .map((levelObj, index) => `${toDisplayLevel(levelObj.level)} ${counts[index]}`)
+    .join(" • ");
+}
+
+function isCodeQuestion(questionObj) {
+  const category = String(questionObj?.category || "").toLowerCase();
+  const hasSnippet = typeof questionObj?.codeSnippet === "string" && questionObj.codeSnippet.trim().length > 0;
+
+  return hasSnippet || category.includes("sql") || category.includes("js") || category.includes("snippet") || category.includes("code");
+}
+
+function formatCategoryLabel(categoryValue) {
+  const normalized = String(categoryValue || "General")
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!normalized) {
+    return "GENERAL";
+  }
+
+  return normalized
+    .split(" ")
+    .map((word) => {
+      const lower = word.toLowerCase();
+      if (lower === "js") {
+        return "JS";
+      }
+      if (lower === "sql") {
+        return "SQL";
+      }
+      return lower.charAt(0).toUpperCase() + lower.slice(1);
+    })
+    .join(" ");
+}
+
+function buildDatasetVersion(sourcePayloads, quizTypeId) {
+  return `${quizTypeId}::${sourcePayloads
+    .map((entry) => `${entry.source.file}:${String(entry.data?.version || "unknown")}`)
+    .sort()
+    .join("|")}`;
+}
+
+function resolveRandomizationConfig(username) {
+  if (FIXED_SEED) {
+    return {
+      mode: "fixed",
+      seedValue: hashStringToSeed(FIXED_SEED),
+      seedDescriptor: `fixed:${FIXED_SEED}`
+    };
+  }
+
+  if (SEED_MODE === "user") {
+    const normalizedUser = normalizeSeedPart(username) || "anonymous";
+    return {
+      mode: "user",
+      seedValue: hashStringToSeed(`user:${normalizedUser}`),
+      seedDescriptor: `user:${normalizedUser}`
+    };
+  }
+
+  if (SEED_MODE === "attempt") {
+    const normalizedUser = normalizeSeedPart(username) || "anonymous";
+    const descriptor = `attempt:${normalizedUser}:${Date.now()}`;
+    return {
+      mode: "attempt",
+      seedValue: hashStringToSeed(descriptor),
+      seedDescriptor: descriptor
+    };
+  }
+
+  return { mode: "off", seedValue: null, seedDescriptor: null };
+}
+
+function createLevelRandomFactory(randomizationConfig) {
+  if (!randomizationConfig || !Number.isInteger(randomizationConfig.seedValue)) {
+    return () => Math.random;
+  }
+
+  return (levelName) => {
+    const mixedSeed = mixSeeds(
+      randomizationConfig.seedValue,
+      hashStringToSeed(`level:${String(levelName || "").toLowerCase()}`)
+    );
+    return createMulberry32(mixedSeed);
+  };
+}
+
+function buildQuestionKey(levelName, questionId) {
+  return `${String(levelName || "").toLowerCase()}::${String(questionId).trim()}`;
+}
+
+function getLevelByName(data, levelName) {
+  if (!data || !Array.isArray(data.levels)) {
+    return null;
+  }
+
+  return data.levels.find((levelObj) => String(levelObj?.level || "").toLowerCase() === levelName) || null;
+}
+
+function shuffleFisherYates(items, randomFn = Math.random) {
+  for (let index = items.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(randomFn() * (index + 1));
+    [items[index], items[randomIndex]] = [items[randomIndex], items[index]];
+  }
+
+  return items;
+}
+
+function takeRandomItems(items, count, randomFn) {
+  return shuffleFisherYates([...items], randomFn).slice(0, count);
+}
+function normalizeCategory(categoryValue) {
+  const normalized = String(categoryValue || "").trim().toLowerCase();
+
+  if (normalized.startsWith("core")) {
+    return "core";
+  }
+  if (normalized.startsWith("scenario")) {
+    return "scenario";
+  }
+  if (normalized === "helper" || normalized.startsWith("helpers")) {
+    return "helpers";
+  }
+
+  return "other";
+}
+
+function normalizeQuestionText(text) {
+  return String(text || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function normalizeSeedPart(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function hashStringToSeed(value) {
+  const input = String(value || "");
+  let hash = 2166136261;
+
+  for (let index = 0; index < input.length; index += 1) {
+    hash ^= input.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+
+  return hash >>> 0;
+}
+
+function mixSeeds(seedA, seedB) {
+  return (seedA ^ seedB) >>> 0;
+}
+
+function createMulberry32(seed) {
+  let state = seed >>> 0;
+
+  return () => {
+    state = (state + 0x6d2b79f5) >>> 0;
+    let t = state;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function createEmptyPoolMap(levelNames) {
+  const map = {};
+  (Array.isArray(levelNames) && levelNames.length > 0 ? levelNames : CORE_LEVEL_ORDER).forEach((levelName) => {
+    map[levelName] = [];
+  });
+  return map;
+}
+
+function toDisplayLevel(levelName) {
+  const value = String(levelName || "").trim();
+  if (!value) {
+    return "Unknown";
+  }
+  return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+}
+
+function clampNumber(value, min, max) {
+  const safeNumber = Number.isInteger(value) ? value : min;
+  if (safeNumber < min) {
+    return min;
+  }
+  if (safeNumber > max) {
+    return max;
+  }
+  return safeNumber;
+}
+
+function showScreen(screenId) {
+  document.querySelectorAll(".screen").forEach((screen) => {
+    screen.classList.toggle("active", screen.id === screenId);
+  });
+}
+
+function clearTimers() {
+  clearInterval(introIntervalId);
+  clearTimeout(introTimeoutId);
+  clearTimeout(transitionTimeoutId);
+  cancelAutoAdvance();
+
+  introIntervalId = null;
+  introTimeoutId = null;
+  transitionTimeoutId = null;
+}
+
+function cancelAutoAdvance() {
+  clearTimeout(autoAdvanceTimeoutId);
+  autoAdvanceTimeoutId = null;
+}
+
+function resetFlowFlags() {
+  isTransitioning = false;
+  cancelAutoAdvance();
+}
+
+function resetQuizState() {
+  quizState.username = "";
+  quizState.currentLevelIndex = 0;
+  quizState.currentQuestionIndex = 0;
+  quizState.answers = [];
+  quizState.score = 0;
+}
+
+function scrollToTopSmooth() {
+  try {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  } catch {
+    window.scrollTo(0, 0);
+  }
+}
+
+function animateElement(element) {
+  if (!element) {
+    return;
+  }
+
+  element.classList.remove("animate-in");
+  void element.offsetWidth;
+  element.classList.add("animate-in");
+}
+
+function smoothScrollToExplanation() {
+  if (!refs.explanationBox || refs.explanationBox.classList.contains("hidden")) {
+    return;
+  }
+
+  refs.explanationBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function debugLog(message) {
+  if (DEBUG_MODE) {
+    console.log(`[QuizDebug] ${message}`);
+  }
+}
+
+function warnLog(message) {
+  console.warn(`[QuizWarning] ${message}`);
+}
